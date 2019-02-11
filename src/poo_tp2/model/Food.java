@@ -16,12 +16,13 @@ public class Food {
      * Lance un thread pour gérer le pourrissement
      */
     public Food() {
+        isFresh = true;
     }
     
     /**
      * ¨Déclenche le pourrissement de la nourriture
      */
     void rot(){
-        
+        isFresh = false;
     }
 }

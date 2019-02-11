@@ -11,18 +11,35 @@ package poo_tp2.model;
  */
 public class Cell {
     boolean isLocked;
-    Object Content; // A pigeon or a food
+    Object content; // A pigeon or a food
+    //TODO: un objet pigeon et un objet food?
+    Pigeon pigeon;
+    Food food;
+    
+    Cell(){
+        isLocked = false;
+        pigeon = null;
+        food = null;
+        content = null;
+    }
     
     boolean lock(){
-        return true;
+        if (isLocked)
+            return false;
+        else
+        {
+            isLocked = true;
+            return true;
+        }
     }
     
     boolean unlock(){
+        isLocked = false;
         return true;
     }
     
     void removeFood(){
-        
+        this.food = null;
     }
     
     void pigeonIsComing(Pigeon p){
@@ -30,7 +47,15 @@ public class Cell {
     }
     
     void setFood(){
-        
+        Food newFood = new Food();
+        content = new Object() {
+            @Override
+            public String toString(){
+                return "food";
+            }
+            
+        };
+        this.food = newFood;
     }
     
 }

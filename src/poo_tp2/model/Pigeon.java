@@ -34,8 +34,8 @@ public class Pigeon {
     }
 
     /**
-     * The pigeon moves randomly somewhere else in the park TODO gérer la
-     * concurrence avec le changement de position de goTo
+     * The pigeon moves randomly somewhere else in the park 
+     * TODO gérer la concurrence avec le changement de position de goTo
      */
     void beAfraid() {
 

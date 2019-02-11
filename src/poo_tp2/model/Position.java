@@ -10,8 +10,8 @@ package poo_tp2.model;
  * @author clair
  */
 public class Position {
-    private final int x;
-    private final int y;
+    private int x;
+    private int y;
     
     //Constructor 1
     public Position(int x, int y){
@@ -35,6 +35,12 @@ public class Position {
      */
     public int getY(){ return y; }
     
+    
+    public void setX(int x) { this.x = x;}
+    
+    public void setY(int y) { this.y = y;}
+    
+    
     /**
      * Given a goal, return the first position where to go to attain this goal
      * @param target Position of the goal
@@ -42,6 +48,7 @@ public class Position {
      */
     Position getStep (Position target){
         return null;
+        //TODO 2: getstep
     }
     
 }
