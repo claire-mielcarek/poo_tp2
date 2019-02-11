@@ -10,52 +10,57 @@ package poo_tp2.model;
  * @author clair
  */
 public class Cell {
+
     boolean isLocked;
     Object content; // A pigeon or a food
     //TODO: un objet pigeon et un objet food?
     Pigeon pigeon;
     Food food;
-    
-    Cell(){
+    Position p;
+
+    Cell(Position p) {
         isLocked = false;
         pigeon = null;
         food = null;
         content = null;
+        this.p = p;
     }
-    
-    boolean lock(){
-        if (isLocked)
+
+    boolean lock() {
+        if (isLocked) {
             return false;
-        else
-        {
+        } else {
             isLocked = true;
             return true;
         }
     }
-    
-    boolean unlock(){
+
+    boolean unlock() {
         isLocked = false;
         return true;
     }
-    
-    void removeFood(){
+
+    void removeFood() {
         this.food = null;
     }
-    
-    void pigeonIsComing(Pigeon p){
-        
+
+    void pigeonIsComing(Pigeon p) {
+
     }
-    
-    void setFood(){
-        Food newFood = new Food();
-        content = new Object() {
-            @Override
-            public String toString(){
-                return "food";
-            }
-            
-        };
+
+    public Position getPosition() {
+        return p;
+    }
+
+    public Object getContent() {
+        return content;
+    }
+
+    Food setFood() {
+        Food newFood = new Food(this.p);
+        this.content = newFood;
         this.food = newFood;
+        return newFood;
     }
-    
+
 }

@@ -11,12 +11,14 @@ package poo_tp2.model;
  */
 public class Food {
     boolean isFresh;
+    private Position p;
 
     /**
      * Lance un thread pour gérer le pourrissement
      */
-    public Food() {
+    public Food(Position p) {
         isFresh = true;
+        this.p = p;
     }
     
     /**
@@ -25,4 +27,19 @@ public class Food {
     void rot(){
         isFresh = false;
     }
+    
+    public boolean isFresh(){
+        return isFresh;
+    }
+    
+    public Position getPosition(){
+        return p;
+    }
+
+    @Override
+    public String toString() {
+        return "Food{" + "isFresh=" + isFresh + ", p=" + p + '}';
+    }
+    
+    
 }

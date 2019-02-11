@@ -50,5 +50,24 @@ public class Position {
         return null;
         //TODO 2: getstep
     }
+
+    /**
+     * Distance euclidienne au carré
+     * @param pigeonPosition
+     * @return 
+     */
+    int distanceTo(Position pigeonPosition) {
+        int otherX = pigeonPosition.getX();
+        int otherY = pigeonPosition.getY();
+        int diffX = this.x - otherX;
+        int diffY = this.y - otherY;
+        return diffX*diffX + diffY*diffY;
+    }
+
+    @Override
+    public String toString() {
+        return "Position{" + "x=" + x + ", y=" + y + '}';
+    }
+    
     
 }
