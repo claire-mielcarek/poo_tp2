@@ -5,41 +5,64 @@
  */
 package poo_tp2.model;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author clair
  */
-public class Food {
+public class Food implements Runnable {
+
     boolean isFresh;
-    private Position p;
+    private final Position p;
+    private final Object lock = new Object();
 
     /**
-     * Lance un thread pour gérer le pourrissement
+     * TODO : Lance un thread pour gérer le pourrissement
      */
     public Food(Position p) {
         isFresh = true;
         this.p = p;
+
     }
-    
+
     /**
-     * ¨Déclenche le pourrissement de la nourriture
+     * ¨Déclenche le pourrissement de la nourriture TODO : doit faire
+     * disparaitre la nourriture au bout d'un moment
      */
-    void rot(){
-        isFresh = false;
+    @Override
+    public void run() {
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Food.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //rot();
     }
-    
-    public boolean isFresh(){
+
+    synchronized private void rot() {
+        isFresh = false;
+        notifyAll();
+    }
+
+    synchronized public boolean isFresh() {
         return isFresh;
     }
-    
-    public Position getPosition(){
+
+    public Position getPosition() {
         return p;
     }
 
     @Override
-    public String toString() {
-        return "Food{" + "isFresh=" + isFresh + ", p=" + p + '}';
+    public synchronized String toString() {
+        String ret;
+        if (isFresh) {
+            ret = "F";
+        } else {
+            ret = "R"; //rot
+        }
+        return ret;
     }
-    
-    
+
 }

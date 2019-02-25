@@ -11,56 +11,75 @@ package poo_tp2.model;
  */
 public class Cell {
 
-    boolean isLocked;
-    Object content; // A pigeon or a food
-    //TODO: un objet pigeon et un objet food?
     Pigeon pigeon;
     Food food;
-    Position p;
+    Position position;
 
     Cell(Position p) {
-        isLocked = false;
         pigeon = null;
         food = null;
-        content = null;
-        this.p = p;
+        this.position = p;
     }
 
-    boolean lock() {
-        if (isLocked) {
-            return false;
-        } else {
-            isLocked = true;
-            return true;
-        }
-    }
-
-    boolean unlock() {
-        isLocked = false;
-        return true;
-    }
-
-    void removeFood() {
+    synchronized void removeFood() {
         this.food = null;
+        notifyAll();
     }
 
-    void pigeonIsComing(Pigeon p) {
-
+    synchronized void pigeonIsComing(Pigeon p) {
+        if (this.food != null) {
+            removeFood();
+        }
+        this.pigeon = p;
+        notifyAll();
     }
 
     public Position getPosition() {
-        return p;
+        return position;
     }
 
-    public Object getContent() {
-        return content;
+    synchronized void setFood(Food f) {;
+        this.food = f;
+        notifyAll();
     }
 
-    Food setFood() {
-        Food newFood = new Food(this.p);
-        this.content = newFood;
-        this.food = newFood;
-        return newFood;
+    synchronized public void setPigeon(Pigeon pigeon) {
+        this.pigeon = pigeon;
+        notifyAll();
+    }
+
+    synchronized public Food getFood() {
+        return food;
+    }
+
+    synchronized public Pigeon getPigeon() {
+        return pigeon;
+    }
+
+    @Override
+    public synchronized String toString() {
+        String ret = "";
+
+        if (food != null) {
+            ret += food.toString();
+            if (pigeon != null) {
+                ret += "P ";
+            } else {
+                ret += "  ";
+            }
+        } else {
+            if (pigeon != null) {
+                ret += "P  ";
+            } else {
+                ret += "*  ";
+            }
+        }
+        return ret;
+    }
+
+    synchronized void pigeonIsLeaving() {
+        pigeon = null;
+        notifyAll();
     }
 
 }

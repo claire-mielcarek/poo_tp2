@@ -6,6 +6,8 @@
 package poo_tp2.model;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,7 +19,13 @@ public class Park {
     ArrayList<Food> foodAvailable;
     int mapSize;
 
-    public Park(int mapSize, int nbPigeons) {
+    /**
+     * At the beginning, map created without food
+     *
+     * @param mapSize
+     * @param nbPigeons
+     */
+    public Park(int mapSize) {
         this.foodAvailable = new ArrayList<>();
         ArrayList<Cell> row;
         this.map = new ArrayList<>();
@@ -29,24 +37,19 @@ public class Park {
             }
             map.add(row);
         }
-
-        //TODO faire l'ajout des pigeons (pour l'instant ajout de 3 tjs au meme endroit
-        Food f = map.get(2).get(4).setFood();
-        foodAvailable.add(f);
-        f = map.get(0).get(4).setFood();
-        foodAvailable.add(f);
-        f = map.get(4).get(0).setFood();
-        foodAvailable.add(f);
     }
 
     /**
      * Add food in the park
      *
      * @param p position where to add
-     * @return if the operation is really executed
+     * @return if the operation is successful
      */
-    boolean setFood(Position p) {
-        this.map.get(p.getX()).get(p.getY()).setFood();
+    public boolean addFood(Position p) {
+        Food f = new Food(p);
+        (new Thread(f)).start();
+        map.get(p.getX()).get(p.getY()).setFood(f);
+        foodAvailable.add(f);
         return true;
     }
 
@@ -59,13 +62,19 @@ public class Park {
     Position findNearestFood(Position pigeonPosition) {
         Position ret = null;
         Position p;
-        int distanceMin = mapSize * mapSize; //Init to the max distance between two points of the map  
+        int distanceMin = 2 * mapSize * mapSize; //Init to the max distance between two points of the map  
         for (Food f : this.foodAvailable) {
-            p = f.getPosition();
-            int distance = p.distanceTo(pigeonPosition);
-            if (distance < distanceMin) {
-                distanceMin = distance;
-                ret = p;
+            synchronized (f) {
+                if (f.isFresh()) {
+                    p = f.getPosition();
+                    //System.out.println("Position étudiée :" + p);
+                    int distance = p.distanceTo(pigeonPosition);
+                    //System.out.println(distance);
+                    if (distance < distanceMin) {
+                        distanceMin = distance;
+                        ret = p;
+                    }
+                }
             }
         }
         return ret;
@@ -76,8 +85,8 @@ public class Park {
      * @return the cell in p position
      */
     Cell getCell(Position p) {
-        if (this.map.size() > p.getX()) {
-            if (this.map.get(p.getX()).size() > p.getY()) {
+        if (this.mapSize > p.getX()) {
+            if (this.mapSize > p.getY()) {
                 return this.map.get(p.getX()).get(p.getY());
             }
         }
@@ -85,35 +94,71 @@ public class Park {
     }
 
     @Override
-    public String toString() {
+    synchronized public String toString() {
         String ret = "";
+        Cell c;
         for (int i = 0; i < this.mapSize; i++) {
             for (int j = 0; j < this.mapSize; j++) {
-                Object content = this.map.get(i).get(j).getContent();
-                if (content instanceof Food) {
-                    ret+="F ";
-                }
-                else if (content instanceof Pigeon){
-                    ret+="P ";
-                }
-                else{
-                    ret+="* ";
-                }
+                c = getCell(this.map.get(i).get(j).getPosition());
+                ret += c.toString();
             }
-            ret+="\n";
+            ret += "\n";
         }
         return ret;
     }
 
-    public static void main(String[] args) {
+    /**
+     * Add a pigeon at a random place in the map Return the pigeon added
+     */
+    public Pigeon addPigeon() {
+        int x = (int) (Math.random() * mapSize);
+        int y = (int) (Math.random() * mapSize);
+        Cell c = this.map.get(x).get(y);
+        while (c.getPigeon() != null) {
+            x = (int) (Math.random() * mapSize);
+            y = (int) (Math.random() * mapSize);
+        }
 
-        Park myPark = new Park(5, 3);
+        Position pos = new Position(x, y);
+        Pigeon pigeon = new Pigeon(pos, this);
+        map.get(x).get(y).setPigeon(pigeon);
+        return pigeon;
+    }
 
-        Position p = new Position(0, 2);
-        System.out.println(myPark);
+     void pigeonIsComing(Pigeon aThis, Position p) {
 
-        System.out.println(myPark.findNearestFood(p));
+        if (!p.equals(aThis.getPosition())) {
 
+            Cell oldCell = this.getCell(aThis.getPosition());
+            Cell nextCell = this.getCell(p);
+            oldCell.pigeonIsLeaving();
+
+            //On enlève la nourriture de la liste
+            Food f = nextCell.getFood();
+            if (f != null) {
+                this.foodAvailable.remove(f);
+            }
+            //On notifie la cellule que le pigeon est là
+            nextCell.pigeonIsComing(aThis);
+        } else {
+            Cell currentCell = this.getCell(p);
+            Food f = currentCell.getFood();
+            if (f != null) {
+                this.foodAvailable.remove(f);
+                currentCell.removeFood();
+            }
+        }
+    }
+
+    boolean canGo(Pigeon pigeon, Position p) {
+        boolean ret = true;
+        Cell c = getCell(p);
+        synchronized (c) {
+            if (c.getPigeon() != null && c.getPigeon() != pigeon) {
+                ret = false;
+            }
+        }
+        return ret;
     }
 
 }

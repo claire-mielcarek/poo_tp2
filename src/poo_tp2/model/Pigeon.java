@@ -5,17 +5,23 @@
  */
 package poo_tp2.model;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author clair
  */
-public class Pigeon {
+public class Pigeon implements Runnable {
 
-    Position myPosition;
+    Position position;
     Park park;
+    int maxTimeSleeping = 5;
+    int sleepCounter = 0;
+    private final Object lock = new Object();
 
     public Pigeon(Position position, Park park) {
-        this.myPosition = position;
+        this.position = position;
         this.park = park;
     }
 
@@ -26,18 +32,33 @@ public class Pigeon {
      */
     Position findNextPosition() {
         Position nextPosition = null;
-        Position target = park.findNearestFood(myPosition);
+        Position target = park.findNearestFood(position);
         if (target != null) {
-            nextPosition = myPosition.getStep(target);
+            nextPosition = position.getStep(target);
         }
         return nextPosition;
     }
 
     /**
-     * The pigeon moves randomly somewhere else in the park 
-     * TODO gérer la concurrence avec le changement de position de goTo
+     * The pigeon moves randomly somewhere else in the park TODO gérer la
+     * concurrence avec le changement de position de goTo
      */
-    void beAfraid() {
+    synchronized void beAfraid() {
+        int x = (int) (Math.random() * park.mapSize);
+        int y = (int) (Math.random() * park.mapSize);
+        Cell c = park.getCell(new Position(x, y));
+        while (c.getPigeon() != null) {
+            x = (int) (Math.random() * park.mapSize);
+            y = (int) (Math.random() * park.mapSize);
+        }
+
+        Position pos = new Position(x, y);
+        c = park.getCell(pos);
+        synchronized (c) {
+            Pigeon pigeon = new Pigeon(pos, this.park);
+            c.setPigeon(pigeon);
+        }
+        System.out.println("I've got afraid");
 
     }
 
@@ -47,19 +68,27 @@ public class Pigeon {
      * @param cell
      */
     void goTo(Position p) {
-        Cell cell = park.getCell(p);
-        while(!cell.lock()){         
+        if (park.canGo(this, p)) {
+            //System.out.println("Pigeon goes to " + p);
+            park.pigeonIsComing(this, p);
+            this.position = p;
         }
-        cell.pigeonIsComing(this);
-        myPosition = p;
-        cell.unlock();
+
     }
 
     /**
      * Function called when there is no food to eat
      */
-    void sleep() {
-        System.out.println("The pigeon do nothing");
+    void sleep(boolean incrementCounter) {
+        if (incrementCounter) {
+            sleepCounter++;
+            System.out.println("The pigeon do nothing");
+        }
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Pigeon.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -67,15 +96,27 @@ public class Pigeon {
      */
     void act() {
         Position p;
-        while (true) {
+        System.out.println(park);
+        while (sleepCounter < maxTimeSleeping) {
             p = findNextPosition();
+            System.out.println(park);
             if (p != null) {
                 goTo(p);
+                sleep(false);
             } else {
-                sleep();
+                sleep(true);
             }
         }
 
+    }
+
+    @Override
+    public void run() {
+        act();
+    }
+
+    public Position getPosition() {
+        return position;
     }
 
 }

@@ -5,16 +5,12 @@
  */
 package poo_tp2;
 
+import poo_tp2.model.Park;
+import poo_tp2.model.Pigeon;
+import poo_tp2.model.Position;
+
 /**
  *
  * @author clair
  */
-public class Main {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-    }
-    
-}
