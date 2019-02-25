@@ -21,53 +21,43 @@ import poo_tp2.view.View;
  *
  * @author clair
  */
-public class Controller implements MouseListener{
+public class Controller implements MouseListener {
 
     View v;
     Park myPark;
-    
 
-    public Controller(Park park){
+    public Controller(Park park) {
         this.myPark = park;
     }
-    
-    
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
 
-        
-        
         int nbPigeons = Integer.parseInt(args[0]);
         int mapSize = Integer.parseInt(args[1]);
         Park myPark = new Park(mapSize);
-        
+
         ArrayList<Pigeon> pigeons = new ArrayList<>();
-
-        Position p = new Position(0, 2);
-        //System.out.println(myPark);
-
-        myPark.addFood(p);
-
-        myPark.addFood(new Position(4, 4));
-        //System.out.println(myPark);
 
         for (int i = 0; i < nbPigeons; i++) {
             //addPigeon(myPark, pigeons);
             Pigeon pg = myPark.addPigeon();
             pigeons.add(pg);
         }
-        
+
         Controller c = new Controller(myPark);
+        
+        myPark.setController(c);
         //création de la vue
-        c.v = new View(mapSize, mapSize, pigeons,myPark.getFoodAvailable(), c);
+        c.v = new View(mapSize, mapSize, pigeons, myPark.getFoodAvailable(), c);
         //c.v.gv.controller = c;
         for (int i = 0; i < nbPigeons; i++) {
             Thread threadPigeon = new Thread(pigeons.get(i));
             threadPigeon.start();
         }
-        
+
     }
 
     private static void addPigeon(Park myPark, ArrayList<Pigeon> pigeons) {
@@ -80,22 +70,23 @@ public class Controller implements MouseListener{
 
     /**
      * Implémente action quand l'utilisateur clique sur une cellule du parc
-     * @param e 
+     *
+     * @param e
      */
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getSource() instanceof JPanel)
-        {
-            JPanel cell = (JPanel) e.getSource();
-            JLabel labelX = (JLabel)cell.getComponent(1);
-            JLabel labelY = (JLabel)cell.getComponent(0);
-            int x = Integer.parseInt(labelX.getText());
-            int y = Integer.parseInt(labelY.getText());
-            Position p = new Position(x, y);
-            myPark.addFood(p);
-            v.gv.createFoodInCell(cell);
+        synchronized (myPark.getFoodAvailable()) {
+            if (e.getSource() instanceof JPanel) {
+                JPanel cell = (JPanel) e.getSource();
+                JLabel labelX = (JLabel) cell.getComponent(1);
+                JLabel labelY = (JLabel) cell.getComponent(0);
+                int x = Integer.parseInt(labelX.getText());
+                int y = Integer.parseInt(labelY.getText());
+                Position p = new Position(x, y);
+                myPark.addFood(p);
+                v.gv.createFoodInCell(cell);
+            }
         }
-        
     }
 
     @Override
@@ -116,6 +107,11 @@ public class Controller implements MouseListener{
     @Override
     public void mouseExited(MouseEvent e) {
         //System.out.println("mouseExited");
+    }
+    
+    public void notifyPigeonMoved(){
+        v.gv.refreshPigeonsPosition();
+        v.gv.con.repaint();
     }
 
 }

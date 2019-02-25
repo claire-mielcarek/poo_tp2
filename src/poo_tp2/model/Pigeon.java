@@ -16,7 +16,7 @@ public class Pigeon implements Runnable {
 
     Position position;
     Park park;
-    int maxTimeSleeping = 50000;
+    int maxTimeSleeping = 500;
     int sleepCounter = 0;
     private final Object lock = new Object();
 
@@ -68,12 +68,15 @@ public class Pigeon implements Runnable {
      * @param cell
      */
     void goTo(Position p) {
-        if (park.canGo(this, p)) {
-            //System.out.println("Pigeon goes to " + p);
-            park.pigeonIsComing(this, p);
-            this.position = p;
+        Cell c = park.getCell(p);
+        synchronized (c) {
+            if (park.canGo(this, p)) {
+                //System.out.println("Pigeon goes to " + p);
+                park.pigeonIsComing(this, p);
+                this.position = p;
+                park.controller.notifyPigeonMoved();
+            }
         }
-
     }
 
     /**
@@ -85,7 +88,7 @@ public class Pigeon implements Runnable {
             System.out.println("The pigeon do nothing");
         }
         try {
-            Thread.sleep(50);
+            Thread.sleep(1000);
         } catch (InterruptedException ex) {
             Logger.getLogger(Pigeon.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -100,6 +103,7 @@ public class Pigeon implements Runnable {
         while (sleepCounter < maxTimeSleeping) {
             p = findNextPosition();
             System.out.println(park);
+            System.out.println("nex pos : " + p);
             if (p != null) {
                 goTo(p);
                 sleep(false);

@@ -8,6 +8,7 @@ package poo_tp2.model;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import poo_tp2.controller.Controller;
 
 /**
  *
@@ -16,8 +17,9 @@ import java.util.logging.Logger;
 public class Park {
 
     ArrayList<ArrayList<Cell>> map;
-    ArrayList<Food> foodAvailable;
+    final ArrayList<Food> foodAvailable;
     int mapSize;
+    Controller controller;
 
     /**
      * At the beginning, map created without food
@@ -46,10 +48,12 @@ public class Park {
      * @return if the operation is successful
      */
     public boolean addFood(Position p) {
-        Food f = new Food(p);
-        (new Thread(f)).start();
-        map.get(p.getX()).get(p.getY()).setFood(f);
-        foodAvailable.add(f);
+        synchronized (foodAvailable) {
+            Food f = new Food(p);
+            (new Thread(f)).start();
+            map.get(p.getX()).get(p.getY()).setFood(f);
+            foodAvailable.add(f);
+        }
         return true;
     }
 
@@ -61,18 +65,21 @@ public class Park {
      */
     Position findNearestFood(Position pigeonPosition) {
         Position ret = null;
-        Position p;
-        int distanceMin = 2 * mapSize * mapSize; //Init to the max distance between two points of the map  
-        for (Food f : this.foodAvailable) {
-            synchronized (f) {
-                if (f.isFresh()) {
-                    p = f.getPosition();
-                    //System.out.println("Position étudiée :" + p);
-                    int distance = p.distanceTo(pigeonPosition);
-                    //System.out.println(distance);
-                    if (distance < distanceMin) {
-                        distanceMin = distance;
-                        ret = p;
+        synchronized (foodAvailable) {
+            System.out.println(foodAvailable);
+            Position p;
+            int distanceMin = 2 * mapSize * mapSize; //Init to the max distance between two points of the map  
+            for (Food f : this.foodAvailable) {
+                synchronized (f) {
+                    if (f.isFresh()) {
+                        p = f.getPosition();
+                        //System.out.println("Position étudiée :" + p);
+                        int distance = p.distanceTo(pigeonPosition);
+                        //System.out.println(distance);
+                        if (distance < distanceMin) {
+                            distanceMin = distance;
+                            ret = p;
+                        }
                     }
                 }
             }
@@ -108,7 +115,8 @@ public class Park {
     }
 
     /**
-     * Add a pigeon at a random place in the map Return the pigeon added
+     * Add a pigeon at a random place in the map 
+     * @return the pigeon added
      */
     public Pigeon addPigeon() {
         int x = (int) (Math.random() * mapSize);
@@ -125,7 +133,7 @@ public class Park {
         return pigeon;
     }
 
-     void pigeonIsComing(Pigeon aThis, Position p) {
+    void pigeonIsComing(Pigeon aThis, Position p) {
 
         if (!p.equals(aThis.getPosition())) {
 
@@ -133,19 +141,23 @@ public class Park {
             Cell nextCell = this.getCell(p);
             oldCell.pigeonIsLeaving();
 
-            //On enlève la nourriture de la liste
+            //On enlève la nourriture de la liste            
             Food f = nextCell.getFood();
             if (f != null) {
-                this.foodAvailable.remove(f);
+                synchronized (f) {
+                    removeFood(f);
+                }
             }
+
             //On notifie la cellule que le pigeon est là
             nextCell.pigeonIsComing(aThis);
         } else {
             Cell currentCell = this.getCell(p);
             Food f = currentCell.getFood();
             if (f != null) {
-                this.foodAvailable.remove(f);
-                currentCell.removeFood();
+                synchronized (f) {
+                    removeFood(f);
+                }
             }
         }
     }
@@ -161,8 +173,20 @@ public class Park {
         return ret;
     }
 
-    public ArrayList<Food> getFoodAvailable(){
-        return this.foodAvailable;
+    public ArrayList<Food> getFoodAvailable() {
+        synchronized (foodAvailable) {
+            return this.foodAvailable;
+        }
     }
-    
+
+    private void removeFood(Food f) {
+        synchronized (foodAvailable) {
+            this.foodAvailable.remove(f);
+        }
+    }
+
+    public void setController(Controller controller) {
+        this.controller = controller;
+    }
+
 }
