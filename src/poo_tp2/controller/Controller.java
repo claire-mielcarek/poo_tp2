@@ -60,14 +60,6 @@ public class Controller implements MouseListener {
 
     }
 
-    private static void addPigeon(Park myPark, ArrayList<Pigeon> pigeons) {
-        Pigeon p = myPark.addPigeon();
-        pigeons.add(p);
-        Thread threadPigeon = new Thread(p);
-        threadPigeon.start();
-
-    }
-
     /**
      * Implémente action quand l'utilisateur clique sur une cellule du parc
      *
@@ -83,11 +75,13 @@ public class Controller implements MouseListener {
                 int x = Integer.parseInt(labelX.getText());
                 int y = Integer.parseInt(labelY.getText());
                 Position p = new Position(x, y);
-                myPark.addFood(p);
-                v.gv.createFoodInCell(cell);
-                synchronized (myPark) {
-                    System.out.println("Je réveille les pigeons");
-                    myPark.notifyAll();
+                boolean success = myPark.addFood(p);
+                if (success) {
+                    v.gv.createFoodInCell(cell);
+                    synchronized (myPark) {
+                        System.out.println("Je réveille les pigeons");
+                        myPark.notifyAll();
+                    }
                 }
             }
         }

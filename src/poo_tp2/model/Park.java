@@ -48,13 +48,20 @@ public class Park {
      * @return if the operation is successful
      */
     public boolean addFood(Position p) {
-        synchronized (foodAvailable) {
-            Food f = new Food(p);
-            (new Thread(f)).start();
-            map.get(p.getX()).get(p.getY()).setFood(f);
-            foodAvailable.add(f);
+        Cell c = getCell(p);
+        boolean ret = false;
+        synchronized (c) {
+            if (c.food == null) {
+                synchronized (foodAvailable) {
+                    Food f = new Food(p);
+                    (new Thread(f)).start();
+                    map.get(p.getX()).get(p.getY()).setFood(f);
+                    foodAvailable.add(f);
+                    ret = true;
+                }
+            }
         }
-        return true;
+        return ret;
     }
 
     /**
@@ -70,20 +77,19 @@ public class Park {
             Position p;
             int distanceMin = 2 * mapSize * mapSize; //Init to the max distance between two points of the map  
             for (Food f : this.foodAvailable) {
-                synchronized (f) {
-                    if (f.isFresh()) {
-                        p = f.getPosition();
-                        //System.out.println("Position étudiée :" + p);
-                        int distance = p.distanceTo(pigeonPosition);
-                        //System.out.println(distance);
-                        if (distance < distanceMin) {
-                            distanceMin = distance;
-                            ret = p;
-                        }
+                if (f.isFresh()) {
+                    p = f.getPosition();
+                    //System.out.println("Position étudiée :" + p);
+                    int distance = p.distanceTo(pigeonPosition);
+                    //System.out.println(distance);
+                    if (distance < distanceMin) {
+                        distanceMin = distance;
+                        ret = p;
                     }
                 }
             }
         }
+        System.out.println("NearestFood : " + ret);
         return ret;
     }
 
@@ -115,7 +121,8 @@ public class Park {
     }
 
     /**
-     * Add a pigeon at a random place in the map 
+     * Add a pigeon at a random place in the map
+     *
      * @return the pigeon added
      */
     public Pigeon addPigeon() {
