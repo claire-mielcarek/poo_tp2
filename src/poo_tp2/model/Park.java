@@ -161,4 +161,8 @@ public class Park {
         return ret;
     }
 
+    public ArrayList<Food> getFoodAvailable(){
+        return this.foodAvailable;
+    }
+    
 }

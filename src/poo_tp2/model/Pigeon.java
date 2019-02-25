@@ -16,7 +16,7 @@ public class Pigeon implements Runnable {
 
     Position position;
     Park park;
-    int maxTimeSleeping = 5;
+    int maxTimeSleeping = 50000;
     int sleepCounter = 0;
     private final Object lock = new Object();
 
