@@ -113,8 +113,14 @@ public class GameView extends JFrame implements Runnable {
         for (int i = 0; i < availableFood.size(); i++) {
             int x = availableFood.get(i).getPosition().getX();
             int y = availableFood.get(i).getPosition().getY();
-            JLabel labelFood = new JLabel(iconFood);
-            cells[x][y].add(labelFood);
+            if (availableFood.get(i).isFresh()) {
+                JLabel labelFood = new JLabel(iconFood);
+                cells[x][y].add(labelFood);
+            }
+            else {
+                JLabel labelFood = new JLabel(iconRottenFood);
+                cells[x][y].add(labelFood);
+            }
         }
 
         con.add(park);
@@ -132,8 +138,6 @@ public class GameView extends JFrame implements Runnable {
      */
     public void createFoodInCell(JPanel cell) {
         JLabel labelFood = new JLabel(iconFood);
-        //labelFood.setHorizontalAlignment(JLabel.CENTER);
-        //labelFood.setVerticalAlignment(JLabel.CENTER);
         synchronized (cell) {
             cell.add(labelFood);
             cell.revalidate();
@@ -191,6 +195,24 @@ public class GameView extends JFrame implements Runnable {
         }
     }
 
+    public void refreshFood(ArrayList<Food> availableFood){
+        for (int i = 0; i < availableFood.size(); i++) {
+            int x = availableFood.get(i).getPosition().getX();
+            int y = availableFood.get(i).getPosition().getY();
+            if (!availableFood.get(i).isFresh()) {
+                if (cells[x][y].getComponentCount() >= 3) {
+                    cells[x][y].remove(2);
+                    cells[x][y].revalidate();
+                    this.con.repaint();
+                }
+                JLabel labelFood = new JLabel(iconRottenFood);
+                cells[x][y].add(labelFood);
+                cells[x][y].revalidate();
+                this.con.repaint();
+            }
+        }
+    }
+    
     public void sleep(boolean incrementCounter) {
         if (incrementCounter) {
             sleepCounter++;
