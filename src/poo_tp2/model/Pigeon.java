@@ -20,6 +20,7 @@ public class Pigeon implements Runnable {
     int maxTimeSleeping = 5;
     int sleepCounter = 0;
     Controller controller;
+    boolean thereIsAChild = false;
 
     public Pigeon(Position position, Park park) {
         this.position = position;
@@ -104,6 +105,17 @@ public class Pigeon implements Runnable {
         System.out.println(park);
         while (true) {
             while (sleepCounter < maxTimeSleeping) {
+                if (thereIsAChild) {
+                    synchronized (this) {
+                        try {
+                            System.out.println("I have to wait to be afraid");
+                            this.wait();
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(Pigeon.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    thereIsAChild = false;
+                }
                 p = findNextPosition();
                 System.out.println(park);
                 System.out.println("nex pos : " + p);
@@ -122,7 +134,7 @@ public class Pigeon implements Runnable {
                     Logger.getLogger(Pigeon.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            sleepCounter = 0; 
+            sleepCounter = 0;
         }
 
     }
@@ -136,4 +148,7 @@ public class Pigeon implements Runnable {
         return position;
     }
 
+    void aChildCome() {
+        thereIsAChild = true;
+    }
 }

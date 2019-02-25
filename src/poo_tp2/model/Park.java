@@ -53,7 +53,7 @@ public class Park {
         synchronized (c) {
             if (c.food == null) {
                 synchronized (foodAvailable) {
-                    Food f = new Food(p);
+                    Food f = new Food(p, this.controller);
                     (new Thread(f)).start();
                     map.get(p.getX()).get(p.getY()).setFood(f);
                     foodAvailable.add(f);
@@ -152,7 +152,9 @@ public class Park {
             Food f = nextCell.getFood();
             if (f != null) {
                 synchronized (f) {
-                    removeFood(f);
+                    if (f.isFresh) {
+                        removeFood(f);
+                    }
                 }
             }
 

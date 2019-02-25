@@ -7,6 +7,7 @@ package poo_tp2.model;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import poo_tp2.controller.Controller;
 
 /**
  *
@@ -16,15 +17,15 @@ public class Food implements Runnable {
 
     boolean isFresh;
     private final Position p;
-    private final Object lock = new Object();
+    Controller controller;
 
     /**
      * TODO : Lance un thread pour gérer le pourrissement
      */
-    public Food(Position p) {
+    public Food(Position p, Controller c) {
         isFresh = true;
         this.p = p;
-
+        controller = c;
     }
 
     /**
@@ -34,16 +35,16 @@ public class Food implements Runnable {
     @Override
     public void run() {
         try {
-            Thread.sleep(10);
+            Thread.sleep(5000);
         } catch (InterruptedException ex) {
             Logger.getLogger(Food.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //rot();
+        rot();
     }
 
     synchronized private void rot() {
         isFresh = false;
-        notifyAll();
+        controller.notifyFoodIsRotten(this.p);
     }
 
     synchronized public boolean isFresh() {

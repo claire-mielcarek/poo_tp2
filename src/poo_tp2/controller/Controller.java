@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import poo_tp2.model.Child;
 import poo_tp2.model.Park;
 import poo_tp2.model.Pigeon;
 import poo_tp2.model.Position;
@@ -31,20 +32,6 @@ public class Controller implements MouseListener {
         this.myPark = park;
         this.pigeons = new ArrayList<>();
 
-        myPark.setController(this);
-
-        for (int i = 0; i < nbPigeons; i++) {
-            //addPigeon(myPark, pigeons);
-            Pigeon pg = myPark.addPigeon();
-            pigeons.add(pg);
-        }
-        //création de la vue
-        v = new View(mapSize, mapSize, pigeons, myPark.getFoodAvailable(), this);
-        //c.v.gv.controller = c;
-        for (int i = 0; i < nbPigeons; i++) {
-            Thread threadPigeon = new Thread(pigeons.get(i));
-            threadPigeon.start();
-        }
     }
 
     /**
@@ -57,6 +44,24 @@ public class Controller implements MouseListener {
         Park myPark = new Park(mapSize);
 
         Controller c = new Controller(myPark, nbPigeons, mapSize);
+        
+        myPark.setController(c);
+
+        for (int i = 0; i < nbPigeons; i++) {
+            //addPigeon(myPark, pigeons);
+            Pigeon pg = myPark.addPigeon();
+            c.pigeons.add(pg);
+        }
+        //création de la vue
+        c.v = new View(mapSize, mapSize, c.pigeons, myPark.getFoodAvailable(), c);
+        //c.v.gv.controller = c;
+        for (int i = 0; i < nbPigeons; i++) {
+            Thread threadPigeon = new Thread(c.pigeons.get(i));
+            threadPigeon.start();
+        }
+        
+        //Child child = new Child(c.pigeons);
+        //(new Thread(child)).start();
 
     }
 
@@ -109,7 +114,15 @@ public class Controller implements MouseListener {
 
     public void notifyPigeonMoved() {
         v.gv.refreshPigeonsPosition();
+        v.gv.refreshFoodImage(myPark.getFoodAvailable());
         v.gv.con.repaint();
+    }
+
+    public void notifyFoodIsRotten(Position p) {
+        System.out.println("Food " + p + "is rotten");
+        //v.gv.refreshFoodImage(p);
+        v.gv.con.repaint();
+
     }
 
 }
