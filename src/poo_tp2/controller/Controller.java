@@ -25,9 +25,26 @@ public class Controller implements MouseListener {
 
     View v;
     Park myPark;
+    ArrayList<Pigeon> pigeons;
 
-    public Controller(Park park) {
+    public Controller(Park park, int nbPigeons, int mapSize) {
         this.myPark = park;
+        this.pigeons = new ArrayList<>();
+
+        myPark.setController(this);
+
+        for (int i = 0; i < nbPigeons; i++) {
+            //addPigeon(myPark, pigeons);
+            Pigeon pg = myPark.addPigeon();
+            pigeons.add(pg);
+        }
+        //création de la vue
+        v = new View(mapSize, mapSize, pigeons, myPark.getFoodAvailable(), this);
+        //c.v.gv.controller = c;
+        for (int i = 0; i < nbPigeons; i++) {
+            Thread threadPigeon = new Thread(pigeons.get(i));
+            threadPigeon.start();
+        }
     }
 
     /**
@@ -39,24 +56,7 @@ public class Controller implements MouseListener {
         int mapSize = Integer.parseInt(args[1]);
         Park myPark = new Park(mapSize);
 
-        ArrayList<Pigeon> pigeons = new ArrayList<>();
-
-        for (int i = 0; i < nbPigeons; i++) {
-            //addPigeon(myPark, pigeons);
-            Pigeon pg = myPark.addPigeon();
-            pigeons.add(pg);
-        }
-
-        Controller c = new Controller(myPark);
-        
-        myPark.setController(c);
-        //création de la vue
-        c.v = new View(mapSize, mapSize, pigeons, myPark.getFoodAvailable(), c);
-        //c.v.gv.controller = c;
-        for (int i = 0; i < nbPigeons; i++) {
-            Thread threadPigeon = new Thread(pigeons.get(i));
-            threadPigeon.start();
-        }
+        Controller c = new Controller(myPark, nbPigeons, mapSize);
 
     }
 
@@ -85,6 +85,10 @@ public class Controller implements MouseListener {
                 Position p = new Position(x, y);
                 myPark.addFood(p);
                 v.gv.createFoodInCell(cell);
+                synchronized (myPark) {
+                    System.out.println("Je réveille les pigeons");
+                    myPark.notifyAll();
+                }
             }
         }
     }
@@ -108,8 +112,8 @@ public class Controller implements MouseListener {
     public void mouseExited(MouseEvent e) {
         //System.out.println("mouseExited");
     }
-    
-    public void notifyPigeonMoved(){
+
+    public void notifyPigeonMoved() {
         v.gv.refreshPigeonsPosition();
         v.gv.con.repaint();
     }

@@ -7,6 +7,7 @@ package poo_tp2.model;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import poo_tp2.controller.Controller;
 
 /**
  *
@@ -16,13 +17,14 @@ public class Pigeon implements Runnable {
 
     Position position;
     Park park;
-    int maxTimeSleeping = 500;
+    int maxTimeSleeping = 5;
     int sleepCounter = 0;
-    private final Object lock = new Object();
+    Controller controller;
 
     public Pigeon(Position position, Park park) {
         this.position = position;
         this.park = park;
+        this.controller = park.controller;
     }
 
     /**
@@ -100,16 +102,27 @@ public class Pigeon implements Runnable {
     void act() {
         Position p;
         System.out.println(park);
-        while (sleepCounter < maxTimeSleeping) {
-            p = findNextPosition();
-            System.out.println(park);
-            System.out.println("nex pos : " + p);
-            if (p != null) {
-                goTo(p);
-                sleep(false);
-            } else {
-                sleep(true);
+        while (true) {
+            while (sleepCounter < maxTimeSleeping) {
+                p = findNextPosition();
+                System.out.println(park);
+                System.out.println("nex pos : " + p);
+                if (p != null) {
+                    goTo(p);
+                    sleep(false);
+                } else {
+                    sleep(true);
+                }
             }
+            System.out.println("Je dors");
+            synchronized (park) {
+                try {
+                    park.wait();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Pigeon.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            sleepCounter = 0; 
         }
 
     }
