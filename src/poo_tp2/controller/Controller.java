@@ -75,17 +75,19 @@ public class Controller implements MouseListener {
         synchronized (myPark.getFoodAvailable()) {
             if (e.getSource() instanceof JPanel) {
                 JPanel cell = (JPanel) e.getSource();
-                JLabel labelX = (JLabel) cell.getComponent(1);
-                JLabel labelY = (JLabel) cell.getComponent(0);
-                int x = Integer.parseInt(labelX.getText());
-                int y = Integer.parseInt(labelY.getText());
-                Position p = new Position(x, y);
-                boolean success = myPark.addFood(p);
-                if (success) {
-                    v.gv.createFoodInCell(cell);
-                    synchronized (myPark) {
-                        System.out.println("Je réveille les pigeons");
-                        myPark.notifyAll();
+                if (cell.getComponentCount() == 2){
+                    JLabel labelX = (JLabel) cell.getComponent(1);
+                    JLabel labelY = (JLabel) cell.getComponent(0);
+                    int x = Integer.parseInt(labelX.getText());
+                    int y = Integer.parseInt(labelY.getText());
+                    Position p = new Position(x, y);
+                    boolean success = myPark.addFood(p);
+                    if (success) {
+                        v.gv.createFoodInCell(cell);
+                        synchronized (myPark) {
+                            System.out.println("Je réveille les pigeons");
+                            myPark.notifyAll();
+                        }
                     }
                 }
             }
@@ -118,11 +120,5 @@ public class Controller implements MouseListener {
         v.gv.con.repaint();
     }
 
-    public void notifyFoodIsRotten(Position p) {
-        System.out.println("Food " + p + "is rotten");
-        //v.gv.refreshFoodImage(p);
-        v.gv.con.repaint();
-
-    }
 
 }

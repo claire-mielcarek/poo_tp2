@@ -25,7 +25,7 @@ import poo_tp2.model.Position;
  *
  * @author tiff9
  */
-public class GameView extends JFrame implements Runnable {
+public class GameView extends JFrame {
 
     public Controller controller;
     public Container con;
@@ -148,6 +148,7 @@ public class GameView extends JFrame implements Runnable {
     public void refreshPigeonsPosition() {
         synchronized (cells) {
             for (int i = 0; i < pigeons.size(); i++) {
+                this.con.repaint();
                 int x = pigeons.get(i).getPosition().getX();
                 int y = pigeons.get(i).getPosition().getY();
                 JLabel labelPigeon = new JLabel(iconPigeon);
@@ -167,25 +168,61 @@ public class GameView extends JFrame implements Runnable {
                     }
 
                     //supprimer fresh food 
-                    System.out.println(cells[x][y].getComponentCount());
-                    if (cells[x][y].getComponentCount() >= 3) {
-                        System.out.println(cells[x][y].getComponent(2));
+                    
+                    //cas 3 components: position + fresh food
+                    if (cells[x][y].getComponentCount() == 3)
+                    {
+                        cells[x][y].remove(2);
+                        cells[x][y].revalidate();
+                        this.con.repaint();
+                        cells[x][y].add(labelPigeon);
+                    }
+                    //cas 4 components: position + isRotten + rotten food
+                    else if (cells[x][y].getComponentCount() >= 4)
+                    {
                         if (cells[x][y].getComponent(2) instanceof JLabel) {
                             JLabel label = (JLabel) cells[x][y].getComponent(2);
-                            System.out.println(cells[x][y].getComponent(2));
-                            cells[x][y].remove(2);
-                            if (label.getText() != null && label.getText().equals("isRotten")) {
+                            //if (label.getText() != null && label.getText().equals("isRotten")) {
                                 System.out.println("On affiche du pourri");
-                                JLabel labelImg = (JLabel) cells[x][y].getComponent(3);
+                                JLabel labelRottenFood = (JLabel) cells[x][y].getComponent(3);
+                                
+                                int compCount = cells[x][y].getComponentCount();
+                                System.out.println("count: "+compCount);
+                                if (compCount >= 5)
+                                {
+                                    for (int k = compCount; k > 5; k--){
+                                        cells[x][y].remove(k-1);
+                                        cells[x][y].revalidate();
+                                        this.con.repaint();
+                                    }
+                                }
                                 cells[x][y].remove(3);
+                                cells[x][y].revalidate();
+                                this.con.repaint();
+                                
+                                cells[x][y].remove(2);
+                                cells[x][y].revalidate();
+                                this.con.repaint();
+                                
+                                
                                 cells[x][y].add(labelPigeon);
+                                cells[x][y].revalidate();
+                                this.con.repaint();
                                 cells[x][y].add(label);
-                                cells[x][y].add(labelImg);
-                            } else {
-                                cells[x][y].add(labelPigeon);
-                            }
+                                cells[x][y].add(labelRottenFood);
+                                
+                                cells[x][y].revalidate();
+                                this.con.repaint();
+                            //}
                         }
                     }
+                    else {
+                        cells[x][y].add(labelPigeon);
+                        System.out.println("pigeon: "+cells[x][y].getComponent(cells[x][y].getComponentCount()-1));
+                        cells[x][y].revalidate();
+                        this.con.repaint();
+                    }
+                    
                     cells[x][y].revalidate();
                     this.con.repaint();
                 }
@@ -193,9 +230,10 @@ public class GameView extends JFrame implements Runnable {
                 previousPigeonsPosition[i][1] = y;
             }
         }
+        this.con.repaint();
     }
 
-    public void refreshFood(ArrayList<Food> availableFood){
+    /*public void refreshFood(ArrayList<Food> availableFood){
         for (int i = 0; i < availableFood.size(); i++) {
             int x = availableFood.get(i).getPosition().getX();
             int y = availableFood.get(i).getPosition().getY();
@@ -211,7 +249,7 @@ public class GameView extends JFrame implements Runnable {
                 this.con.repaint();
             }
         }
-    }
+    }*/
     
     public void sleep(boolean incrementCounter) {
         if (incrementCounter) {
@@ -225,43 +263,35 @@ public class GameView extends JFrame implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-        //refreshPigeonsPosition();
-        //this.con.repaint();
-    }
-
-    /*public void refreshFoodImage(Position p) {
-        int x = p.getX();
-        int y = p.getY();
-        JLabel labelRottenFood = new JLabel(iconRottenFood);
-        synchronized (cells[x][y]) {
-            //Delete image of fresh food
-            if (cells[x][y].getComponentCount() >= 3) {
-                cells[x][y].remove(2);
-                cells[x][y].add(labelRottenFood);
-                cells[x][y].revalidate();
-                this.con.repaint();
-            }
-        }
-    }*/
     public void refreshFoodImage(ArrayList<Food> availableFood) {
         for (int i = 0; i < availableFood.size(); i++) {
             int x = availableFood.get(i).getPosition().getX();
             int y = availableFood.get(i).getPosition().getY();
             if (!availableFood.get(i).isFresh()) {
-                if (cells[x][y].getComponentCount() >= 3) {
-                    cells[x][y].remove(2);
-                    cells[x][y].revalidate();
-                    this.con.repaint();
+                
+                if (cells[x][y].getComponentCount() == 3) {
+                    JLabel label = (JLabel) cells[x][y].getComponent(2);
+                    
+                    if (label.getText() != null && label.getText().equals("isRotten")){
+                        //food already rotten
+                    }
+                    else {
+                        cells[x][y].remove(2);
+                        cells[x][y].revalidate();
+                        this.con.repaint();
+                        
+                        JLabel labelRotten = new JLabel("isRotten");
+                        labelRotten.setVisible(false);
+                        cells[x][y].add(labelRotten);
+                        JLabel labelFood = new JLabel(iconRottenFood);
+                        cells[x][y].add(labelFood);
+                        cells[x][y].revalidate();
+                        this.con.repaint();
+                    }
+
                 }
-                JLabel labelRotten = new JLabel("isRotten");
-                cells[x][y].add(labelRotten);
-                JLabel labelFood = new JLabel(iconRottenFood);
-                cells[x][y].add(labelFood);
-                cells[x][y].revalidate();
-                this.con.repaint();
             }
+            this.con.repaint();
         }
     }
 }

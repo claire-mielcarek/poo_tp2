@@ -24,7 +24,6 @@ public class View {
   
   public View(int rows, int columns, ArrayList<Pigeon> pigeons, ArrayList<Food> availableFood, Controller c){
       this.gv = new GameView(rows, columns, pigeons, availableFood, c);
-      (new Thread(this.gv)).start();
   }
   
 

@@ -44,7 +44,6 @@ public class Food implements Runnable {
 
     synchronized private void rot() {
         isFresh = false;
-        controller.notifyFoodIsRotten(this.p);
     }
 
     synchronized public boolean isFresh() {
