@@ -5,12 +5,12 @@
  */
 package poo_tp2.model;
 
+import poo_tp2.Position;
 /**
  *
  * @author clair
  */
 public class Cell {
-
     Pigeon pigeon;
     Food food;
     Position position;
@@ -26,6 +26,10 @@ public class Cell {
         notifyAll();
     }
 
+    /**
+     * A pigeon come on the Cell, so the food has to be removed
+     * @param p 
+     */
     synchronized void pigeonIsComing(Pigeon p) {
         if (this.food != null) {
             removeFood();
@@ -38,7 +42,7 @@ public class Cell {
         return position;
     }
 
-    synchronized void setFood(Food f) {;
+    synchronized void setFood(Food f) {
         this.food = f;
         notifyAll();
     }
@@ -77,6 +81,9 @@ public class Cell {
         return ret;
     }
 
+    /**
+     * The pigeon which is on the cell leaves
+     */
     synchronized void pigeonIsLeaving() {
         pigeon = null;
         notifyAll();

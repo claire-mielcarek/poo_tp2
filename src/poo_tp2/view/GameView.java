@@ -6,20 +6,13 @@
 package poo_tp2.view;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import poo_tp2.controller.Controller;
-import poo_tp2.model.Food;
-import poo_tp2.model.Pigeon;
-import poo_tp2.model.Position;
+import poo_tp2.Position;
 
 /**
  *
@@ -29,19 +22,15 @@ public class GameView extends JFrame {
 
     public Controller controller;
     public Container con;
-    public ImageIcon iconPigeon = new ImageIcon(new ImageIcon("src/poo_tp2/img/pigeon_icon.png").getImage().getScaledInstance(52, 80, Image.SCALE_DEFAULT));
+    public ImageIcon iconEntity = new ImageIcon(new ImageIcon("src/poo_tp2/img/pigeon_icon.png").getImage().getScaledInstance(52, 80, Image.SCALE_DEFAULT));
     public ImageIcon iconBackground = new ImageIcon(new ImageIcon("src/poo_tp2/img/background.jpg").getImage().getScaledInstance(1000, 800, Image.SCALE_DEFAULT));
-    public ImageIcon iconFood = new ImageIcon(new ImageIcon("src/poo_tp2/img/food_icon.png").getImage().getScaledInstance(75, 75, Image.SCALE_DEFAULT));
-    public ImageIcon iconRottenFood = new ImageIcon(new ImageIcon("src/poo_tp2/img/rottenfood_icon.png").getImage().getScaledInstance(75, 75, Image.SCALE_DEFAULT));
+    public ImageIcon iconValidTarget = new ImageIcon(new ImageIcon("src/poo_tp2/img/food_icon.png").getImage().getScaledInstance(75, 75, Image.SCALE_DEFAULT));
+    public ImageIcon iconUnvalidTarget = new ImageIcon(new ImageIcon("src/poo_tp2/img/rottenfood_icon.png").getImage().getScaledInstance(75, 75, Image.SCALE_DEFAULT));
     public JPanel cells[][];
-    public ArrayList<Pigeon> pigeons;
-    int sleepCounter = 0;
-    int maxTimeSleeping = 5;
-    int previousPigeonsPosition[][];
+    int[][] previousEntitiesPositions;
 
-    public GameView(int rows, int columns, ArrayList<Pigeon> pigeons, ArrayList<Food> availableFood, Controller c) {
+    public GameView(int rows, int columns, ArrayList<Position> entitiesPositions, Controller c) {
         this.controller = c;
-        this.pigeons = pigeons;
         setSize(1000, 800);
         setResizable(false);
         setLocationRelativeTo(null);
@@ -51,22 +40,8 @@ public class GameView extends JFrame {
 
         this.con = getContentPane();
 
-        /*JPanel background = new JPanel(){
-             public void paintComponent(Graphics g){
-              g.drawImage(GameView.this.iconBackground.getImage(), 0, 0, null);
-              super.paintComponent(g);
-            }
-        };
-        background.setBackground(new Color(0,0,0,0));*/
-        //background.setBounds(0, 0, 1000, 800);
-        /*JMenuBar mbMenu = new JMenuBar();
-        JMenu mHelp = new JMenu("?");
-        JMenuItem miAbout = new JMenuItem("About the game");
-        mHelp.add(miAbout);
-        mbMenu.add(mHelp);
-        setJMenuBar(mbMenu);*/
-        //park (gridLayout)
         JPanel park = new JPanel() {
+            @Override
             public void paintComponent(Graphics g) {
                 g.drawImage(GameView.this.iconBackground.getImage(), 0, 0, null);
                 super.paintComponent(g);
@@ -74,12 +49,10 @@ public class GameView extends JFrame {
         };
         park.setBackground(new Color(0, 0, 0, 0));
         park.setLayout(new GridLayout(rows, columns, -1, -1));
-        //park.setBounds(0, 0, 800, 800);
         park.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
         Border blackline = BorderFactory.createLineBorder(Color.black, 1);
 
-        //ArrayList<JPanel> cells = new ArrayList();
         cells = new JPanel[rows][columns];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -99,62 +72,52 @@ public class GameView extends JFrame {
             }
 
         }
-        //park.setBorder(blackline);
-        previousPigeonsPosition = new int[pigeons.size()][2];
-        for (int i = 0; i < pigeons.size(); i++) {
-            int x = pigeons.get(i).getPosition().getX();
-            int y = pigeons.get(i).getPosition().getY();
-            JLabel labelPigeon = new JLabel(iconPigeon);
-            cells[x][y].add(labelPigeon);
-            previousPigeonsPosition[i][0] = x;
-            previousPigeonsPosition[i][1] = y;
-        }
-
-        for (int i = 0; i < availableFood.size(); i++) {
-            int x = availableFood.get(i).getPosition().getX();
-            int y = availableFood.get(i).getPosition().getY();
-            if (availableFood.get(i).isFresh()) {
-                JLabel labelFood = new JLabel(iconFood);
-                cells[x][y].add(labelFood);
-            }
-            else {
-                JLabel labelFood = new JLabel(iconRottenFood);
-                cells[x][y].add(labelFood);
-            }
+        
+        previousEntitiesPositions = new int[entitiesPositions.size()][2];
+        for (int i = 0; i < entitiesPositions.size(); i++) {
+            int x = entitiesPositions.get(i).getX();
+            int y = entitiesPositions.get(i).getY();
+            JLabel labelEntity = new JLabel(iconEntity);
+            cells[x][y].add(labelEntity);
+            previousEntitiesPositions[i][0] = x;
+            previousEntitiesPositions[i][1] = y;
         }
 
         con.add(park);
-        //background.add(park);
-        //con.add(background);
         con.setVisible(true);
         this.setVisible(true);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
     /**
-     * Ajoute image de nourriture où l'utilisateur a cliqué
+     * Add an valid target image where the user clicked
      *
      * @param cell
      */
     public void createFoodInCell(JPanel cell) {
-        JLabel labelFood = new JLabel(iconFood);
+        JLabel labelValidTarget = new JLabel(iconValidTarget);
         synchronized (cell) {
-            cell.add(labelFood);
+            cell.add(labelValidTarget);
             cell.revalidate();
             this.con.repaint();
         }
     }
 
-    public void refreshPigeonsPosition() {
+    /**
+     * Refresh the position of all entities on the interface
+     * 
+     * @param positions of all the entities
+     */
+    public void refreshEntitiesPosition(ArrayList<Position> positions) {
         synchronized (cells) {
-            for (int i = 0; i < pigeons.size(); i++) {
+            for (int i = 0; i < positions.size(); i++) {
                 this.con.repaint();
-                int x = pigeons.get(i).getPosition().getX();
-                int y = pigeons.get(i).getPosition().getY();
-                JLabel labelPigeon = new JLabel(iconPigeon);
+                int x = positions.get(i).getX();
+                int y = positions.get(i).getY();
+                JLabel labelEntity = new JLabel(iconEntity);
 
-                int pX = previousPigeonsPosition[i][0];
-                int pY = previousPigeonsPosition[i][1];
+                int pX = previousEntitiesPositions[i][0];
+                int pY = previousEntitiesPositions[i][1];
                 synchronized (cells[pX][pY]) {
 
                     synchronized (cells[x][y]) {
@@ -168,123 +131,89 @@ public class GameView extends JFrame {
                     }
 
                     //supprimer fresh food 
-                    
                     //cas 3 components: position + fresh food
-                    if (cells[x][y].getComponentCount() == 3)
-                    {
+                    if (cells[x][y].getComponentCount() == 3) {
                         cells[x][y].remove(2);
                         cells[x][y].revalidate();
                         this.con.repaint();
-                        cells[x][y].add(labelPigeon);
-                    }
-                    //cas 4 components: position + isRotten + rotten food
-                    else if (cells[x][y].getComponentCount() >= 4)
-                    {
+                        cells[x][y].add(labelEntity);
+                    } //cas 4 components: position + unvalid+ rotten food
+                    else if (cells[x][y].getComponentCount() >= 4) {
                         if (cells[x][y].getComponent(2) instanceof JLabel) {
                             JLabel label = (JLabel) cells[x][y].getComponent(2);
-                            //if (label.getText() != null && label.getText().equals("isRotten")) {
-                                System.out.println("On affiche du pourri");
-                                JLabel labelRottenFood = (JLabel) cells[x][y].getComponent(3);
-                                
-                                int compCount = cells[x][y].getComponentCount();
-                                System.out.println("count: "+compCount);
-                                if (compCount >= 5)
-                                {
-                                    for (int k = compCount; k > 5; k--){
-                                        cells[x][y].remove(k-1);
-                                        cells[x][y].revalidate();
-                                        this.con.repaint();
-                                    }
+                            //if (label.getText() != null && label.getText().equals("unvalid")) {
+                            System.out.println("On affiche du pourri");
+                            JLabel labelUnvalidTarget = (JLabel) cells[x][y].getComponent(3);
+
+                            int compCount = cells[x][y].getComponentCount();
+                            System.out.println("count: " + compCount);
+                            if (compCount >= 5) {
+                                for (int k = compCount; k > 5; k--) {
+                                    cells[x][y].remove(k - 1);
+                                    cells[x][y].revalidate();
+                                    this.con.repaint();
                                 }
-                                cells[x][y].remove(3);
-                                cells[x][y].revalidate();
-                                this.con.repaint();
-                                
-                                cells[x][y].remove(2);
-                                cells[x][y].revalidate();
-                                this.con.repaint();
-                                
-                                
-                                cells[x][y].add(labelPigeon);
-                                cells[x][y].revalidate();
-                                this.con.repaint();
-                                cells[x][y].add(label);
-                                cells[x][y].add(labelRottenFood);
-                                
-                                cells[x][y].revalidate();
-                                this.con.repaint();
+                            }
+                            cells[x][y].remove(3);
+                            cells[x][y].revalidate();
+                            this.con.repaint();
+
+                            cells[x][y].remove(2);
+                            cells[x][y].revalidate();
+                            this.con.repaint();
+
+                            cells[x][y].add(labelEntity);
+                            cells[x][y].revalidate();
+                            this.con.repaint();
+                            cells[x][y].add(label);
+                            cells[x][y].add(labelUnvalidTarget);
+
+                            cells[x][y].revalidate();
+                            this.con.repaint();
                             //}
                         }
-                    }
-                    else {
-                        cells[x][y].add(labelPigeon);
-                        System.out.println("pigeon: "+cells[x][y].getComponent(cells[x][y].getComponentCount()-1));
+                    } else {
+                        cells[x][y].add(labelEntity);
+                        System.out.println("pigeon: " + cells[x][y].getComponent(cells[x][y].getComponentCount() - 1));
                         cells[x][y].revalidate();
                         this.con.repaint();
                     }
-                    
+
                     cells[x][y].revalidate();
                     this.con.repaint();
                 }
-                previousPigeonsPosition[i][0] = x;
-                previousPigeonsPosition[i][1] = y;
+                previousEntitiesPositions[i][0] = x;
+                previousEntitiesPositions[i][1] = y;
             }
         }
         this.con.repaint();
     }
 
-    /*public void refreshFood(ArrayList<Food> availableFood){
-        for (int i = 0; i < availableFood.size(); i++) {
-            int x = availableFood.get(i).getPosition().getX();
-            int y = availableFood.get(i).getPosition().getY();
-            if (!availableFood.get(i).isFresh()) {
-                if (cells[x][y].getComponentCount() >= 3) {
-                    cells[x][y].remove(2);
-                    cells[x][y].revalidate();
-                    this.con.repaint();
-                }
-                JLabel labelFood = new JLabel(iconRottenFood);
-                cells[x][y].add(labelFood);
-                cells[x][y].revalidate();
-                this.con.repaint();
-            }
-        }
-    }*/
-    
-    public void sleep(boolean incrementCounter) {
-        if (incrementCounter) {
-            sleepCounter++;
-            System.out.println("game sleep");
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(GameView.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    public void refreshFoodImage(ArrayList<Food> availableFood) {
-        for (int i = 0; i < availableFood.size(); i++) {
-            int x = availableFood.get(i).getPosition().getX();
-            int y = availableFood.get(i).getPosition().getY();
-            if (!availableFood.get(i).isFresh()) {
-                
+    /**
+     * Refresh image corresponding to the target (change image whether target is still valid or not)
+     * @param targets position of the targets
+     * @param targetValidity validity of the targets
+     */
+    public void refreshTargetImage(ArrayList<Position> targets, ArrayList<Boolean> targetValidity) {
+        for (int i = 0; i < targets.size(); i++) {
+            int x = targets.get(i).getX();
+            int y = targets.get(i).getY();
+            if (!targetValidity.get(i)) {
                 if (cells[x][y].getComponentCount() == 3) {
                     JLabel label = (JLabel) cells[x][y].getComponent(2);
-                    
-                    if (label.getText() != null && label.getText().equals("isRotten")){
+
+                    if (label.getText() != null && label.getText().equals("unvalid")) {
                         //food already rotten
-                    }
-                    else {
+                    } else {
                         cells[x][y].remove(2);
                         cells[x][y].revalidate();
                         this.con.repaint();
-                        
-                        JLabel labelRotten = new JLabel("isRotten");
+
+                        JLabel labelRotten = new JLabel("unvalid");
                         labelRotten.setVisible(false);
                         cells[x][y].add(labelRotten);
-                        JLabel labelFood = new JLabel(iconRottenFood);
-                        cells[x][y].add(labelFood);
+                        JLabel labelValidTarget = new JLabel(iconUnvalidTarget);
+                        cells[x][y].add(labelValidTarget);
                         cells[x][y].revalidate();
                         this.con.repaint();
                     }

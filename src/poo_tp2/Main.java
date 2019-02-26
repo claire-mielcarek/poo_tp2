@@ -7,7 +7,6 @@ package poo_tp2;
 
 import poo_tp2.model.Park;
 import poo_tp2.model.Pigeon;
-import poo_tp2.model.Position;
 
 /**
  *

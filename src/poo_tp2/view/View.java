@@ -5,13 +5,9 @@
  */
 package poo_tp2.view;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import poo_tp2.controller.Controller;
-import poo_tp2.model.Food;
-import poo_tp2.model.Pigeon;
+import poo_tp2.Position;
 
 /**
  *
@@ -22,8 +18,8 @@ public class View {
   
 
   
-  public View(int rows, int columns, ArrayList<Pigeon> pigeons, ArrayList<Food> availableFood, Controller c){
-      this.gv = new GameView(rows, columns, pigeons, availableFood, c);
+  public View(int rows, int columns, ArrayList<Position> positions, Controller c){
+      this.gv = new GameView(rows, columns, positions, c);
   }
   
 

@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 package poo_tp2.model;
-
+import poo_tp2.controller.Controller;
+import poo_tp2.Position;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import poo_tp2.controller.Controller;
 
 /**
  *
@@ -20,12 +20,14 @@ public class Pigeon implements Runnable {
     int maxTimeSleeping = 5;
     int sleepCounter = 0;
     Controller controller;
+    int number;
     boolean thereIsAChild = false;
 
-    public Pigeon(Position position, Park park) {
+    public Pigeon(int number, Position position, Park park) {
         this.position = position;
         this.park = park;
         this.controller = park.controller;
+        this.number = number;
     }
 
     /**
@@ -35,7 +37,7 @@ public class Pigeon implements Runnable {
      */
     Position findNextPosition() {
         Position nextPosition = null;
-        Position target = park.findNearestFood(position);
+        Position target = park.findFreshestFood(position);
         if (target != null) {
             nextPosition = position.getStep(target);
         }
@@ -58,8 +60,8 @@ public class Pigeon implements Runnable {
         Position pos = new Position(x, y);
         c = park.getCell(pos);
         synchronized (c) {
-            Pigeon pigeon = new Pigeon(pos, this.park);
-            c.setPigeon(pigeon);
+//            Pigeon pigeon = new Pigeon(pos, this.park);
+//            c.setPigeon(pigeon);
         }
         System.out.println("I've got afraid");
 
@@ -67,23 +69,22 @@ public class Pigeon implements Runnable {
 
     /**
      * Move to a cell and eat the food on if there is
-     *
-     * @param cell
      */
     void goTo(Position p) {
         Cell c = park.getCell(p);
         synchronized (c) {
             if (park.canGo(this, p)) {
                 //System.out.println("Pigeon goes to " + p);
-                park.pigeonIsComing(this, p);
+                park.pigeonIsMoving(this, p);
                 this.position = p;
-                park.controller.notifyPigeonMoved();
+                park.controller.notifyPigeonMoved(this.number, this.position);
             }
         }
     }
 
     /**
-     * Function called when there is no food to eat
+     * Sleep function so that the movements of the pigeon can be visible
+     * Increment an inactivity counter whether the pigeon did something or not
      */
     void sleep(boolean incrementCounter) {
         if (incrementCounter) {

@@ -8,14 +8,10 @@ package poo_tp2.controller;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import poo_tp2.model.Child;
-import poo_tp2.model.Park;
-import poo_tp2.model.Pigeon;
-import poo_tp2.model.Position;
+import poo_tp2.model.*;
+import poo_tp2.Position;
 import poo_tp2.view.View;
 
 /**
@@ -27,11 +23,12 @@ public class Controller implements MouseListener {
     View v;
     Park myPark;
     ArrayList<Pigeon> pigeons;
+    ArrayList<Position> pigeonPositions;
 
     public Controller(Park park, int nbPigeons, int mapSize) {
         this.myPark = park;
         this.pigeons = new ArrayList<>();
-
+        this.pigeonPositions = new ArrayList<>();
     }
 
     /**
@@ -44,29 +41,29 @@ public class Controller implements MouseListener {
         Park myPark = new Park(mapSize);
 
         Controller c = new Controller(myPark, nbPigeons, mapSize);
-        
+
         myPark.setController(c);
 
         for (int i = 0; i < nbPigeons; i++) {
             //addPigeon(myPark, pigeons);
-            Pigeon pg = myPark.addPigeon();
+            Pigeon pg = myPark.addPigeon(i);
             c.pigeons.add(pg);
+            c.pigeonPositions.add(pg.getPosition());
         }
         //création de la vue
-        c.v = new View(mapSize, mapSize, c.pigeons, myPark.getFoodAvailable(), c);
+        c.v = new View(mapSize, mapSize, c.pigeonPositions, c);
         //c.v.gv.controller = c;
         for (int i = 0; i < nbPigeons; i++) {
             Thread threadPigeon = new Thread(c.pigeons.get(i));
             threadPigeon.start();
         }
-        
+
         //Child child = new Child(c.pigeons);
         //(new Thread(child)).start();
-
     }
 
     /**
-     * Implémente action quand l'utilisateur clique sur une cellule du parc
+     * Action to do when the user clicks
      *
      * @param e
      */
@@ -75,7 +72,7 @@ public class Controller implements MouseListener {
         synchronized (myPark.getFoodAvailable()) {
             if (e.getSource() instanceof JPanel) {
                 JPanel cell = (JPanel) e.getSource();
-                if (cell.getComponentCount() == 2){
+                if (cell.getComponentCount() == 2) {
                     JLabel labelX = (JLabel) cell.getComponent(1);
                     JLabel labelY = (JLabel) cell.getComponent(0);
                     int x = Integer.parseInt(labelX.getText());
@@ -114,11 +111,25 @@ public class Controller implements MouseListener {
         //System.out.println("mouseExited");
     }
 
-    public void notifyPigeonMoved() {
-        v.gv.refreshPigeonsPosition();
-        v.gv.refreshFoodImage(myPark.getFoodAvailable());
+    /**
+     * Used by the pigeons to tell that they moved
+     * Get the needed data to refresh the view and refresh it
+     * @param pigeonNumber
+     * @param newPosition 
+     */
+    public void notifyPigeonMoved(int pigeonNumber, Position newPosition) {
+        pigeonPositions.set(pigeonNumber, newPosition);
+        v.gv.refreshEntitiesPosition(pigeonPositions);
+        ArrayList<Position> targets = new ArrayList<>();
+        ArrayList<Boolean> targetValidity = new ArrayList<>();
+        synchronized (myPark.getFoodAvailable()) {
+            for (Food f : myPark.getFoodAvailable()) {
+                targets.add(f.getPosition());
+                targetValidity.add(f.isFresh());
+            }
+        }
+        v.gv.refreshTargetImage(targets, targetValidity);
         v.gv.con.repaint();
     }
-
 
 }

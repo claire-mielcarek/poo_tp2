@@ -5,9 +5,10 @@
  */
 package poo_tp2.model;
 
+import poo_tp2.Position;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import poo_tp2.controller.Controller;
 
 /**
  *
@@ -15,17 +16,18 @@ import poo_tp2.controller.Controller;
  */
 public class Food implements Runnable {
 
-    boolean isFresh;
+    private static final int FRESHNESS_MAX = 10;
+    private static final int FRESHNESS_MIN = 0;
+    private int freshness;
     private final Position p;
-    Controller controller;
 
-    /**
-     * TODO : Lance un thread pour gérer le pourrissement
-     */
-    public Food(Position p, Controller c) {
-        isFresh = true;
+    public Food(Position p) {
         this.p = p;
-        controller = c;
+        freshness = FRESHNESS_MAX;
+    }
+
+    public boolean isFresh() {
+        return freshness > FRESHNESS_MIN;
     }
 
     /**
@@ -34,35 +36,64 @@ public class Food implements Runnable {
      */
     @Override
     public void run() {
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Food.class.getName()).log(Level.SEVERE, null, ex);
+        while (freshness > FRESHNESS_MIN) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Food.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            rot();
         }
-        rot();
     }
 
+    /**
+     * The food is rotting so its freshness decreases
+     */
     synchronized private void rot() {
-        isFresh = false;
-    }
-
-    synchronized public boolean isFresh() {
-        return isFresh;
+        freshness--;
     }
 
     public Position getPosition() {
         return p;
     }
 
+    private int getFreshness() {
+        return freshness;
+    }
+
     @Override
     public synchronized String toString() {
         String ret;
-        if (isFresh) {
-            ret = "F";
+        if (isFresh()) {
+            ret = "F" + freshness;
         } else {
-            ret = "R"; //rot
+            ret = "R "; //rot
         }
         return ret;
+    }
+
+    /**
+     * Return the freshest food in a list of Foo
+     *
+     * @param list
+     * @return the freshest food found or null if list is empty
+     */
+    public static Food getFreshestFood(ArrayList<Food> list) {
+        Food best = null;
+        int bestFreshness = Food.FRESHNESS_MIN;
+        int tmpFreshness;
+        try {
+            for (Food f : list) {
+                tmpFreshness = f.getFreshness();
+                if (tmpFreshness > bestFreshness) {
+                    best = f;
+                    bestFreshness = tmpFreshness;
+                }
+            }
+        } catch (NullPointerException e) {
+            System.out.println("getFreshestFood got a null argument");
+        }
+        return best;
     }
 
 }

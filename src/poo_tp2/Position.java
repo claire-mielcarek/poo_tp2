@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package poo_tp2.model;
+package poo_tp2;
 
 /**
  *
@@ -57,7 +57,7 @@ public class Position {
      * position
      * @return the next position to attain
      */
-    Position getStep(Position target) {
+    public Position getStep(Position target) {
         Position nextPos;
         if (target.getX() < this.x) {
             nextPos = new Position(x - 1, y);
@@ -77,12 +77,12 @@ public class Position {
     /**
      * Distance euclidienne au carré
      *
-     * @param pigeonPosition
+     * @param otherPosition
      * @return
      */
-    int distanceTo(Position pigeonPosition) {
-        int otherX = pigeonPosition.getX();
-        int otherY = pigeonPosition.getY();
+    int distanceTo(Position otherPosition) {
+        int otherX = otherPosition.getX();
+        int otherY = otherPosition.getY();
         int diffX = this.x - otherX;
         int diffY = this.y - otherY;
         return diffX * diffX + diffY * diffY;
@@ -108,10 +108,7 @@ public class Position {
         if (this.x != other.x) {
             return false;
         }
-        if (this.y != other.y) {
-            return false;
-        }
-        return true;
+        return this.y == other.y;
     }
 
     
