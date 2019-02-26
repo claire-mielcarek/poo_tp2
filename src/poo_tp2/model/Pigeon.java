@@ -49,6 +49,7 @@ public class Pigeon implements Runnable {
      * concurrence avec le changement de position de goTo
      */
     synchronized void beAfraid() {
+        Cell oldCell = park.getCell(this.getPosition());
         int x = (int) (Math.random() * park.mapSize);
         int y = (int) (Math.random() * park.mapSize);
         Cell c = park.getCell(new Position(x, y));
@@ -60,8 +61,12 @@ public class Pigeon implements Runnable {
         Position pos = new Position(x, y);
         c = park.getCell(pos);
         synchronized (c) {
-//            Pigeon pigeon = new Pigeon(pos, this.park);
-//            c.setPigeon(pigeon);
+            //Pigeon pigeon = new Pigeon(pos, this.park);
+            //c.setPigeon(pigeon);
+            this.setPosition(pos);
+            oldCell.setPigeon(null);
+            c.setPigeon(this);
+            park.controller.notifyPigeonMoved();
         }
         System.out.println("I've got afraid");
 
@@ -106,7 +111,7 @@ public class Pigeon implements Runnable {
         System.out.println(park);
         while (true) {
             while (sleepCounter < maxTimeSleeping) {
-                if (thereIsAChild) {
+                /*if (thereIsAChild) {
                     synchronized (this) {
                         try {
                             System.out.println("I have to wait to be afraid");
@@ -116,6 +121,11 @@ public class Pigeon implements Runnable {
                         }
                     }
                     thereIsAChild = false;
+                }*/
+                if (park.isScary)
+                {
+                    this.beAfraid();
+                    System.out.println(park);
                 }
                 p = findNextPosition();
                 System.out.println(park);
@@ -128,6 +138,10 @@ public class Pigeon implements Runnable {
                 }
             }
             System.out.println("Je dors");
+                /*if (park.isScary)
+                {
+                    this.beAfraid();
+                }*/
             synchronized (park) {
                 try {
                     park.wait();
@@ -149,6 +163,10 @@ public class Pigeon implements Runnable {
         return position;
     }
 
+    public void setPosition(Position p) {
+        this.position = p;
+    }
+    
     void aChildCome() {
         thereIsAChild = true;
     }

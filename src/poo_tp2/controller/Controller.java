@@ -20,9 +20,9 @@ import poo_tp2.view.View;
  */
 public class Controller implements MouseListener {
 
-    View v;
-    Park myPark;
-    ArrayList<Pigeon> pigeons;
+    private View v;
+    private Park myPark;
+    private ArrayList<Pigeon> pigeons;
     ArrayList<Position> pigeonPositions;
 
     public Controller(Park park, int nbPigeons, int mapSize) {
@@ -31,6 +31,8 @@ public class Controller implements MouseListener {
         this.pigeonPositions = new ArrayList<>();
     }
 
+    public View getView(){
+        return this.v;
     /**
      * @param args the command line arguments
      */
@@ -61,6 +63,24 @@ public class Controller implements MouseListener {
         //Child child = new Child(c.pigeons);
         //(new Thread(child)).start();
     }
+    public Park getPark(){
+        return this.myPark;
+    }
+    public ArrayList<Pigeon> getPigeons(){
+        return this.pigeons;
+    }
+    
+    public void setView(View v){
+        this.v = v;
+    }
+    public void setPark(Park park){
+        this.myPark = park;
+    }
+    public void setPigeons(ArrayList<Pigeon> pigeons){
+        this.pigeons = pigeons;
+    }
+    
+    
 
     /**
      * Action to do when the user clicks

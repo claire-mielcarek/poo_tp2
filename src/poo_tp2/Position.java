@@ -111,5 +111,8 @@ public class Position {
         return this.y == other.y;
     }
 
-    
+    public void generateRandomPosition(int mapSize){
+        this.setX((int) (Math.random() * mapSize));
+        this.setY((int) (Math.random() * mapSize));
+    }
 }

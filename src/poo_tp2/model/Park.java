@@ -19,6 +19,7 @@ public class Park {
     final ArrayList<Food> foodAvailable;
     int mapSize;
     Controller controller;
+    public boolean isScary =  false;
 
     /**
      * At the beginning, map created without food and without pigeons
