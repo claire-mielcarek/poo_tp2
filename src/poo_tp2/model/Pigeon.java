@@ -45,8 +45,8 @@ public class Pigeon implements Runnable {
     }
 
     /**
-     * The pigeon moves randomly somewhere else in the park TODO gérer la
-     * concurrence avec le changement de position de goTo
+     * The pigeon moves randomly somewhere else in the park
+     *  TODO 2: gérer la concurrence avec le changement de position de goTo
      */
     synchronized void beAfraid() {
         Cell oldCell = park.getCell(this.getPosition());
@@ -66,7 +66,7 @@ public class Pigeon implements Runnable {
             this.setPosition(pos);
             oldCell.setPigeon(null);
             c.setPigeon(this);
-            park.controller.notifyPigeonMoved();
+            park.controller.notifyPigeonMoved(this.number, pos);
         }
         System.out.println("I've got afraid");
 

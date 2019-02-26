@@ -23,7 +23,7 @@ public class Controller implements MouseListener {
     private View v;
     private Park myPark;
     private ArrayList<Pigeon> pigeons;
-    ArrayList<Position> pigeonPositions;
+    private ArrayList<Position> pigeonPositions;
 
     public Controller(Park park, int nbPigeons, int mapSize) {
         this.myPark = park;
@@ -33,6 +33,7 @@ public class Controller implements MouseListener {
 
     public View getView(){
         return this.v;
+    }
     /**
      * @param args the command line arguments
      */
@@ -59,10 +60,11 @@ public class Controller implements MouseListener {
             Thread threadPigeon = new Thread(c.pigeons.get(i));
             threadPigeon.start();
         }
+    }
 
         //Child child = new Child(c.pigeons);
         //(new Thread(child)).start();
-    }
+
     public Park getPark(){
         return this.myPark;
     }
@@ -80,8 +82,13 @@ public class Controller implements MouseListener {
         this.pigeons = pigeons;
     }
     
+    public ArrayList<Position> getPigeonPositions(){
+        return this.pigeonPositions;
+    }
     
-
+    public void setPigeonPositions(ArrayList<Position> positions){
+        this.pigeonPositions = positions;
+    }
     /**
      * Action to do when the user clicks
      *

@@ -31,8 +31,8 @@ public class Food implements Runnable {
     }
 
     /**
-     * ¨Déclenche le pourrissement de la nourriture TODO : doit faire
-     * disparaitre la nourriture au bout d'un moment
+     * ¨Déclenche le pourrissement de la nourriture 
+     * TODO 1 (fait?): doit faire disparaitre la nourriture au bout d'un moment
      */
     @Override
     public void run() {

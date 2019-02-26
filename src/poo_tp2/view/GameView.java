@@ -146,7 +146,6 @@ public class GameView extends JFrame {
                             JLabel labelUnvalidTarget = (JLabel) cells[x][y].getComponent(3);
 
                             int compCount = cells[x][y].getComponentCount();
-                            System.out.println("count: " + compCount);
                             if (compCount >= 5) {
                                 for (int k = compCount; k > 5; k--) {
                                     cells[x][y].remove(k - 1);
@@ -174,7 +173,6 @@ public class GameView extends JFrame {
                         }
                     } else {
                         cells[x][y].add(labelEntity);
-                        System.out.println("pigeon: " + cells[x][y].getComponent(cells[x][y].getComponentCount() - 1));
                         cells[x][y].revalidate();
                         this.con.repaint();
                     }
