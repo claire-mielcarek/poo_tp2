@@ -22,22 +22,6 @@ public class Child implements Runnable {
         this.list = list;
     }
 
-    /*public void newPositionOfPigeons(int mapSize){
-        int nbPigeons = list.size();
-        for (int i = 0; i < nbPigeons; i++){
-            Pigeon currentPigeon = list.get(i);
-            Position p = currentPigeon.getPosition();
-            p.generateRandomPosition(mapSize);
-            for (int j = 0; j < i; j++){
-                if (p.equals(list.get(j)))
-                {
-                    j = 0;
-                    p.generateRandomPosition(mapSize);
-                }
-            }
-            list.get(i).setPosition(p);
-        }
-    }*/
     
     @Override
     public void run() {

@@ -8,10 +8,11 @@ package poo_tp2;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import poo_tp2.controller.Controller;
+import poo_tp2.controller.GameController;
 import poo_tp2.model.Park;
 import poo_tp2.model.Pigeon;
 import poo_tp2.Position;
+import poo_tp2.controller.StartController;
 import poo_tp2.view.View;
 
 /**
@@ -20,18 +21,23 @@ import poo_tp2.view.View;
  */
 
 public class Main{
+    
     public static void main(String[] args) {
+        StartController sc = new StartController();
+    }
+}
+    
+    /*public static void main(String[] args) {
         int nbPigeons = Integer.parseInt(args[0]);
         int mapSize = Integer.parseInt(args[1]);
         Park myPark = new Park(mapSize);
 
-        Controller c = new Controller(myPark, nbPigeons, mapSize);
+        GameController c = new GameController(myPark, nbPigeons, mapSize);
         ArrayList<Pigeon> pigeons = c.getPigeons();
         ArrayList<Position> pigeonPositions = c.getPigeonPositions();
 
         myPark.setController(c);
 
-        //TODO 3: problème de pigeon qui ne bouge pas quand il devrait
         
         
         for (int i = 0; i < nbPigeons; i++) {
@@ -62,7 +68,7 @@ public class Main{
                     try {
                         Thread.sleep(time);
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     myPark.isScary = true;
                     System.out.println("The park gets scary.");
@@ -73,7 +79,7 @@ public class Main{
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     myPark.isScary = false;
                 }
@@ -85,7 +91,7 @@ public class Main{
         /*int nbPigeons = Integer.parseInt(args[0]);
         int mapSize = Integer.parseInt(args[1]);
         Park myPark = new Park(mapSize);
-        Controller c = new Controller(myPark, nbPigeons, mapSize);
+        GameController c = new GameController(myPark, nbPigeons, mapSize);
         ArrayList<Pigeon> pigeons = c.getPigeons();
         
         myPark.setController(c);
@@ -111,7 +117,7 @@ public class Main{
                     try {
                         Thread.sleep(time);
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     myPark.isScary = true;
                     System.out.println("The park gets scary.");
@@ -122,7 +128,7 @@ public class Main{
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GameController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     myPark.isScary = false;
                 }
@@ -132,4 +138,4 @@ public class Main{
                 //Child child = new Child(c.pigeons);
         //(new Thread(child)).start();
     }*/
-}
+

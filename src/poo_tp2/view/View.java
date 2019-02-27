@@ -6,7 +6,7 @@
 package poo_tp2.view;
 
 import java.util.ArrayList;
-import poo_tp2.controller.Controller;
+import poo_tp2.controller.GameController;
 import poo_tp2.Position;
 
 /**
@@ -15,10 +15,11 @@ import poo_tp2.Position;
  */
 public class View {
   public GameView gv;
+  public StartView sv;
   
 
   
-  public View(int rows, int columns, ArrayList<Position> positions, Controller c){
+  public View(int rows, int columns, ArrayList<Position> positions, GameController c){
       this.gv = new GameView(rows, columns, positions, c);
   }
   

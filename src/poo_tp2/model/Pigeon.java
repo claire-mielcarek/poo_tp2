@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package poo_tp2.model;
-import poo_tp2.controller.Controller;
+import poo_tp2.controller.GameController;
 import poo_tp2.Position;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +19,7 @@ public class Pigeon implements Runnable {
     Park park;
     int maxTimeSleeping = 5;
     int sleepCounter = 0;
-    Controller controller;
+    GameController controller;
     int number;
     boolean thereIsAChild = false;
 
@@ -47,6 +47,7 @@ public class Pigeon implements Runnable {
     /**
      * The pigeon moves randomly somewhere else in the park
      *  TODO 2: gérer la concurrence avec le changement de position de goTo
+     * TODO 4: utiliser Position.generateRandomPosition()?
      */
     synchronized void beAfraid() {
         Cell oldCell = park.getCell(this.getPosition());

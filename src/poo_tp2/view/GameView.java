@@ -7,11 +7,9 @@ package poo_tp2.view;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.Border;
-import poo_tp2.controller.Controller;
+import poo_tp2.controller.GameController;
 import poo_tp2.Position;
 
 /**
@@ -20,18 +18,32 @@ import poo_tp2.Position;
  */
 public class GameView extends JFrame {
 
-    public Controller controller;
+    public GameController controller;
     public Container con;
-    public ImageIcon iconEntity = new ImageIcon(new ImageIcon("src/poo_tp2/img/pigeon_icon.png").getImage().getScaledInstance(52, 80, Image.SCALE_DEFAULT));
-    public ImageIcon iconBackground = new ImageIcon(new ImageIcon("src/poo_tp2/img/background.jpg").getImage().getScaledInstance(1000, 800, Image.SCALE_DEFAULT));
-    public ImageIcon iconValidTarget = new ImageIcon(new ImageIcon("src/poo_tp2/img/food_icon.png").getImage().getScaledInstance(75, 75, Image.SCALE_DEFAULT));
-    public ImageIcon iconUnvalidTarget = new ImageIcon(new ImageIcon("src/poo_tp2/img/rottenfood_icon.png").getImage().getScaledInstance(75, 75, Image.SCALE_DEFAULT));
+    public Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    public int heightView =(int) screenSize.getHeight() * 80/100;
+    public int widthView = (int)screenSize.getWidth() * 60/100;
+    public ImageIcon iconEntity = new ImageIcon(new ImageIcon("src/poo_tp2/img/entity_icon.png")
+            .getImage().getScaledInstance(52, 80, Image.SCALE_DEFAULT));
+    public ImageIcon iconBackground = new ImageIcon(new ImageIcon("src/poo_tp2/img/background.jpg")
+            .getImage().getScaledInstance(widthView, heightView, Image.SCALE_DEFAULT));
+    public ImageIcon iconBackground2 = new ImageIcon(new ImageIcon("src/poo_tp2/img/background2.jpg")
+            .getImage().getScaledInstance(widthView, heightView, Image.SCALE_DEFAULT));
+    public ImageIcon iconValidTarget = new ImageIcon(new ImageIcon("src/poo_tp2/img/target_icon.png")
+            .getImage().getScaledInstance(75, 75, Image.SCALE_DEFAULT));
+    public ImageIcon iconUnvalidTarget = new ImageIcon(new ImageIcon("src/poo_tp2/img/rottentarget_icon.png")
+            .getImage().getScaledInstance(75, 75, Image.SCALE_DEFAULT));
     public JPanel cells[][];
     int[][] previousEntitiesPositions;
+    public JPanel panelBackground;
+    public JPanel park;
+    public boolean isScary = false;
 
-    public GameView(int rows, int columns, ArrayList<Position> entitiesPositions, Controller c) {
+
+    public GameView(int rows, int columns, ArrayList<Position> entitiesPositions, GameController c) {
         this.controller = c;
-        setSize(1000, 800);
+        
+        setSize(widthView, heightView);
         setResizable(false);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(3);
@@ -40,13 +52,25 @@ public class GameView extends JFrame {
 
         this.con = getContentPane();
 
-        JPanel park = new JPanel() {
+        panelBackground = new JPanel();
+        panelBackground.setBackground(new Color(0, 0, 0, 0));
+
+        
+        park = new JPanel() {
             @Override
             public void paintComponent(Graphics g) {
-                g.drawImage(GameView.this.iconBackground.getImage(), 0, 0, null);
+                 if (isScary){
+                    g.drawImage(GameView.this.iconBackground2.getImage(), 0, 0, null);
+                 }
+                 else
+                 {
+                     g.drawImage(GameView.this.iconBackground.getImage(), 0, 0, null);
+                 }
                 super.paintComponent(g);
             }
+            
         };
+        
         park.setBackground(new Color(0, 0, 0, 0));
         park.setLayout(new GridLayout(rows, columns, -1, -1));
         park.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
@@ -89,6 +113,11 @@ public class GameView extends JFrame {
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
+    public void changeBackground(boolean isScary){
+        this.isScary = isScary;
+        park.repaint();
+    }
+    
     /**
      * Add an valid target image where the user clicked
      *
@@ -99,7 +128,7 @@ public class GameView extends JFrame {
         synchronized (cell) {
             cell.add(labelValidTarget);
             cell.revalidate();
-            this.con.repaint();
+            park.repaint();
         }
     }
 
@@ -111,7 +140,6 @@ public class GameView extends JFrame {
     public void refreshEntitiesPosition(ArrayList<Position> positions) {
         synchronized (cells) {
             for (int i = 0; i < positions.size(); i++) {
-                this.con.repaint();
                 int x = positions.get(i).getX();
                 int y = positions.get(i).getY();
                 JLabel labelEntity = new JLabel(iconEntity);
@@ -126,7 +154,7 @@ public class GameView extends JFrame {
                         if (cells[pX][pY].getComponentCount() >= 3) {
                             cells[pX][pY].remove(2);
                             cells[pX][pY].revalidate();
-                            this.con.repaint();
+                            park.repaint();
                         }
                     }
 
@@ -135,8 +163,8 @@ public class GameView extends JFrame {
                     if (cells[x][y].getComponentCount() == 3) {
                         cells[x][y].remove(2);
                         cells[x][y].revalidate();
-                        this.con.repaint();
                         cells[x][y].add(labelEntity);
+                        park.repaint();
                     } //cas 4 components: position + unvalid+ rotten food
                     else if (cells[x][y].getComponentCount() >= 4) {
                         if (cells[x][y].getComponent(2) instanceof JLabel) {
@@ -150,41 +178,41 @@ public class GameView extends JFrame {
                                 for (int k = compCount; k > 5; k--) {
                                     cells[x][y].remove(k - 1);
                                     cells[x][y].revalidate();
-                                    this.con.repaint();
+                                    park.repaint();
                                 }
                             }
                             cells[x][y].remove(3);
                             cells[x][y].revalidate();
-                            this.con.repaint();
+                            park.repaint();
 
                             cells[x][y].remove(2);
                             cells[x][y].revalidate();
-                            this.con.repaint();
+                            park.repaint();
 
                             cells[x][y].add(labelEntity);
                             cells[x][y].revalidate();
-                            this.con.repaint();
+                            park.repaint();
                             cells[x][y].add(label);
                             cells[x][y].add(labelUnvalidTarget);
 
                             cells[x][y].revalidate();
-                            this.con.repaint();
-                            //}
+                            park.repaint();
                         }
                     } else {
                         cells[x][y].add(labelEntity);
                         cells[x][y].revalidate();
-                        this.con.repaint();
+                        park.repaint();
                     }
 
                     cells[x][y].revalidate();
-                    this.con.repaint();
+                    park.repaint();
                 }
                 previousEntitiesPositions[i][0] = x;
                 previousEntitiesPositions[i][1] = y;
+                park.repaint();
             }
         }
-        this.con.repaint();
+        park.repaint();
     }
 
     /**
@@ -201,11 +229,12 @@ public class GameView extends JFrame {
                     JLabel label = (JLabel) cells[x][y].getComponent(2);
 
                     if (label.getText() != null && label.getText().equals("unvalid")) {
-                        //food already rotten
+                        //food already rotten                        
+                        park.repaint();
                     } else {
                         cells[x][y].remove(2);
                         cells[x][y].revalidate();
-                        this.con.repaint();
+                        park.repaint();
 
                         JLabel labelRotten = new JLabel("unvalid");
                         labelRotten.setVisible(false);
@@ -213,12 +242,12 @@ public class GameView extends JFrame {
                         JLabel labelValidTarget = new JLabel(iconUnvalidTarget);
                         cells[x][y].add(labelValidTarget);
                         cells[x][y].revalidate();
-                        this.con.repaint();
+                        park.repaint();
                     }
 
                 }
             }
-            this.con.repaint();
+            park.repaint();
         }
     }
 }

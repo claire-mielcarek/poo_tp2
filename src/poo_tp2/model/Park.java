@@ -7,7 +7,7 @@ package poo_tp2.model;
 
 import poo_tp2.Position;
 import java.util.ArrayList;
-import poo_tp2.controller.Controller;
+import poo_tp2.controller.GameController;
 
 /**
  *
@@ -18,7 +18,7 @@ public class Park {
     ArrayList<ArrayList<Cell>> map;
     final ArrayList<Food> foodAvailable;
     int mapSize;
-    Controller controller;
+    GameController controller;
     public boolean isScary =  false;
 
     /**
@@ -40,7 +40,7 @@ public class Park {
         }
     }
 
-    public void setController(Controller controller) {
+    public void setController(GameController controller) {
         this.controller = controller;
     }    
     
