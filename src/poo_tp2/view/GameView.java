@@ -36,7 +36,7 @@ public class GameView extends JFrame {
     public JPanel cells[][];
     int[][] previousEntitiesPositions;
     public JPanel panelBackground;
-    public JPanel park;
+    public JPanel panelPark;
     public boolean isScary = false;
 
 
@@ -56,7 +56,7 @@ public class GameView extends JFrame {
         panelBackground.setBackground(new Color(0, 0, 0, 0));
 
         
-        park = new JPanel() {
+        panelPark = new JPanel() {
             @Override
             public void paintComponent(Graphics g) {
                  if (isScary){
@@ -71,9 +71,9 @@ public class GameView extends JFrame {
             
         };
         
-        park.setBackground(new Color(0, 0, 0, 0));
-        park.setLayout(new GridLayout(rows, columns, -1, -1));
-        park.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        panelPark.setBackground(new Color(0, 0, 0, 0));
+        panelPark.setLayout(new GridLayout(rows, columns, -1, -1));
+        panelPark.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
         Border blackline = BorderFactory.createLineBorder(Color.black, 1);
 
@@ -92,7 +92,7 @@ public class GameView extends JFrame {
                 labelY.setVisible(false);
                 cells[i][j].add(labelX);
                 cells[i][j].add(labelY);
-                park.add(cells[i][j]);
+                panelPark.add(cells[i][j]);
             }
 
         }
@@ -107,7 +107,7 @@ public class GameView extends JFrame {
             previousEntitiesPositions[i][1] = y;
         }
 
-        con.add(park);
+        con.add(panelPark);
         con.setVisible(true);
         this.setVisible(true);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -115,7 +115,7 @@ public class GameView extends JFrame {
 
     public void changeBackground(boolean isScary){
         this.isScary = isScary;
-        park.repaint();
+        panelPark.repaint();
     }
     
     /**
@@ -128,7 +128,7 @@ public class GameView extends JFrame {
         synchronized (cell) {
             cell.add(labelValidTarget);
             cell.revalidate();
-            park.repaint();
+            panelPark.repaint();
         }
     }
 
@@ -154,7 +154,7 @@ public class GameView extends JFrame {
                         if (cells[pX][pY].getComponentCount() >= 3) {
                             cells[pX][pY].remove(2);
                             cells[pX][pY].revalidate();
-                            park.repaint();
+                            panelPark.repaint();
                         }
                     }
 
@@ -164,7 +164,7 @@ public class GameView extends JFrame {
                         cells[x][y].remove(2);
                         cells[x][y].revalidate();
                         cells[x][y].add(labelEntity);
-                        park.repaint();
+                        panelPark.repaint();
                     } //cas 4 components: position + unvalid+ rotten food
                     else if (cells[x][y].getComponentCount() >= 4) {
                         if (cells[x][y].getComponent(2) instanceof JLabel) {
@@ -178,41 +178,41 @@ public class GameView extends JFrame {
                                 for (int k = compCount; k > 5; k--) {
                                     cells[x][y].remove(k - 1);
                                     cells[x][y].revalidate();
-                                    park.repaint();
+                                    panelPark.repaint();
                                 }
                             }
                             cells[x][y].remove(3);
                             cells[x][y].revalidate();
-                            park.repaint();
+                            panelPark.repaint();
 
                             cells[x][y].remove(2);
                             cells[x][y].revalidate();
-                            park.repaint();
+                            panelPark.repaint();
 
                             cells[x][y].add(labelEntity);
                             cells[x][y].revalidate();
-                            park.repaint();
+                            panelPark.repaint();
                             cells[x][y].add(label);
                             cells[x][y].add(labelUnvalidTarget);
 
                             cells[x][y].revalidate();
-                            park.repaint();
+                            panelPark.repaint();
                         }
                     } else {
                         cells[x][y].add(labelEntity);
                         cells[x][y].revalidate();
-                        park.repaint();
+                        panelPark.repaint();
                     }
 
                     cells[x][y].revalidate();
-                    park.repaint();
+                    panelPark.repaint();
                 }
                 previousEntitiesPositions[i][0] = x;
                 previousEntitiesPositions[i][1] = y;
-                park.repaint();
+                panelPark.repaint();
             }
         }
-        park.repaint();
+        panelPark.repaint();
     }
 
     /**
@@ -230,11 +230,11 @@ public class GameView extends JFrame {
 
                     if (label.getText() != null && label.getText().equals("unvalid")) {
                         //food already rotten                        
-                        park.repaint();
+                        panelPark.repaint();
                     } else {
                         cells[x][y].remove(2);
                         cells[x][y].revalidate();
-                        park.repaint();
+                        panelPark.repaint();
 
                         JLabel labelRotten = new JLabel("unvalid");
                         labelRotten.setVisible(false);
@@ -242,12 +242,12 @@ public class GameView extends JFrame {
                         JLabel labelValidTarget = new JLabel(iconUnvalidTarget);
                         cells[x][y].add(labelValidTarget);
                         cells[x][y].revalidate();
-                        park.repaint();
+                        panelPark.repaint();
                     }
 
                 }
             }
-            park.repaint();
+            panelPark.repaint();
         }
     }
 }

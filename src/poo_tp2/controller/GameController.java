@@ -178,7 +178,7 @@ public class GameController implements MouseListener {
             }
         }
         v.gv.refreshTargetImage(targets, targetValidity);
-        v.gv.park.repaint();
+        v.gv.panelPark.repaint();
     }
 
 }

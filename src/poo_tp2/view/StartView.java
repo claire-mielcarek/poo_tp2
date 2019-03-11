@@ -26,6 +26,9 @@ public class StartView extends JFrame {
     public Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public int heightView =(int) screenSize.getHeight() * 30/100;
     public int widthView = (int)screenSize.getWidth() * 20/100;
+    public ImageIcon iconApp = new ImageIcon(new ImageIcon("src/poo_tp2/img/app_icon.png")
+            .getImage().getScaledInstance(80, 80, Image.SCALE_DEFAULT));
+    
     
     public StartView(StartController sc){
         
@@ -38,22 +41,33 @@ public class StartView extends JFrame {
         
         con = this.getContentPane();
         
+        
         mainPan = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         
         
-        JLabel labelMapSize = new JLabel("Choose a size for the map: ");
+        JLabel labelIcon = new JLabel(iconApp);
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0,100,0,0);
+        mainPan.add(labelIcon, gbc);
+        
+        JLabel labelMapSize = new JLabel("Choose a size for the map: ");
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         gbc.weightx = 0.5;
-        gbc.fill = GridBagConstraints.EAST;
+        gbc.fill = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(15,0,0,0);
         mainPan.add(labelMapSize, gbc);
         
         JLabel labelEntitiesNumber = new JLabel("Number of pigeons: ");
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.weightx = 0.5;
-        gbc.fill = GridBagConstraints.EAST;
+        gbc.fill = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(10,0,0,0);
         mainPan.add(labelEntitiesNumber, gbc);
         
         //map size
@@ -62,11 +76,14 @@ public class StartView extends JFrame {
         int maxSize = 8;
         int stepSize = 1;
         SpinnerNumberModel snmSize = new SpinnerNumberModel(currentSize, minSize, maxSize, stepSize);
-        spinnerSize = new JSpinner(snmSize);        
+        spinnerSize = new JSpinner(snmSize);
         gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.weightx = 0.5;
-        gbc.fill = GridBagConstraints.CENTER;
+        gbc.gridy = 1;
+        gbc.weightx = 1;
+        //gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.WEST;
+        gbc.insets = new Insets(15,-50,0,0);
+        gbc.ipadx = 15;
         mainPan.add(spinnerSize, gbc);
         
         //number of pigeons
@@ -78,17 +95,21 @@ public class StartView extends JFrame {
         spinnerNumber = new JSpinner(snmNumber);        
         gbc.gridx = 1;
         gbc.gridy = 2;
-        gbc.weightx = 0.5;
-        gbc.fill = GridBagConstraints.CENTER;
+        gbc.weightx = 1;
+        //gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10,-50,0,0);
+        gbc.ipadx = 4;
         mainPan.add(spinnerNumber, gbc);
 
         
         buttonPlay = new JButton("Play");
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        //gbc.weightx = 2;
-        //gbc.anchor = GridBagConstraints.PAGE_END;
-        gbc.fill = GridBagConstraints.CENTER;
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.weightx = 1;
+        gbc.insets = new Insets(20,-100,0,0);
+        gbc.anchor = GridBagConstraints.PAGE_END;
+        //gbc.fill = GridBagConstraints.CENTER;
         buttonPlay.addActionListener(sc);
         mainPan.add(buttonPlay, gbc);
         
