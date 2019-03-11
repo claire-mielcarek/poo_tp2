@@ -60,11 +60,9 @@ public class Park {
      * Add food in the park
      *
      * @param p position where to add
-     * @return if the operation is successful
      */
-    public boolean addFood(Position p) {
+    public void addFood(Position p) throws Exception {
         Cell c = getCell(p);
-        boolean ret = false;
         synchronized (c) {
             if (c.food == null) {
                 synchronized (foodAvailable) {
@@ -72,11 +70,12 @@ public class Park {
                     (new Thread(f)).start();
                     map.get(p.getX()).get(p.getY()).setFood(f);
                     foodAvailable.add(f);
-                    ret = true;
                 }
             }
+            else{
+                throw new Exception("There is already food here");
+            }
         }
-        return ret;
     }
 
     /**

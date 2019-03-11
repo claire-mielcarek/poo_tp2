@@ -126,13 +126,15 @@ public class GameController implements MouseListener {
                     int x = Integer.parseInt(labelX.getText());
                     int y = Integer.parseInt(labelY.getText());
                     Position p = new Position(x, y);
-                    boolean success = myPark.addFood(p);
-                    if (success) {
+                    try {
+                        myPark.addFood(p);
                         v.gv.createFoodInCell(cell);
                         synchronized (myPark) {
                             System.out.println("Je réveille les pigeons");
                             myPark.notifyAll();
                         }
+                    } catch (Exception ex) {
+                        Logger.getLogger(GameController.class.getName()).log(Level.WARNING, null, ex);
                     }
                 }
             }
