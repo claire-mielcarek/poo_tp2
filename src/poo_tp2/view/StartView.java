@@ -13,8 +13,8 @@ import javax.swing.*;
 import poo_tp2.controller.StartController;
 
 /**
- *
- * @author tiff9
+ * Implements the view of the start window
+ * @author Claire and Tiffany
  */
 public class StartView extends JFrame {
     public Container con;
@@ -29,7 +29,10 @@ public class StartView extends JFrame {
     public ImageIcon iconApp = new ImageIcon(new ImageIcon("src/poo_tp2/img/app_icon.png")
             .getImage().getScaledInstance(80, 80, Image.SCALE_DEFAULT));
     
-    
+    /**
+     * Constructor of the start window, creates the fields and the play button
+     * @param sc 
+     */
     public StartView(StartController sc){
         
         setResizable(false);
@@ -72,7 +75,7 @@ public class StartView extends JFrame {
         
         //map size
         int currentSize = 5;
-        int minSize = 3;
+        int minSize = 4;
         int maxSize = 8;
         int stepSize = 1;
         SpinnerNumberModel snmSize = new SpinnerNumberModel(currentSize, minSize, maxSize, stepSize);
@@ -89,10 +92,10 @@ public class StartView extends JFrame {
         //number of pigeons
         int currentNumber = 2;
         int minNumber = 1;
-        int maxNumber = 10;
+        int maxNumber = 8;
         int stepNumber = 1;
         SpinnerNumberModel snmNumber = new SpinnerNumberModel(currentNumber, minNumber, maxNumber, stepNumber);
-        spinnerNumber = new JSpinner(snmNumber);        
+        spinnerNumber = new JSpinner(snmNumber);
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.weightx = 1;
@@ -119,6 +122,10 @@ public class StartView extends JFrame {
     }
     
 
+    /**
+     * Gets the size chosen by the player
+     * @return 
+     */
     public int getMapSize(){
        
         try {
@@ -130,17 +137,29 @@ public class StartView extends JFrame {
         return value;
     }
     
-    
-    public int getEntitiesNumber(){
+    /**
+     * gets the number chosen by the player
+     * throws an exception if the number is superior to the size previously chosen
+     * @return
+     * @throws Exception 
+     */
+    public int getEntitiesNumber()throws Exception {
         try {
             spinnerNumber.commitEdit();
         } catch (ParseException ex) {
             Logger.getLogger(StartView.class.getName()).log(Level.SEVERE, null, ex);
         }
         int value = (Integer) spinnerNumber.getValue();
+        if (this.getMapSize() < value)
+        {
+            throw new Exception("Please choose a lower entity value");
+        }
         return value;
     }
     
+    /**
+     * close the start window
+     */
     public void closeStartView(){
         dispose();
     }

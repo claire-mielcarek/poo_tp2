@@ -6,8 +6,8 @@
 package poo_tp2;
 
 /**
- *
- * @author clair
+ * Implements methods related to a 2D Position 
+ * @author Claire and Tiffany
  */
 public class Position {
 

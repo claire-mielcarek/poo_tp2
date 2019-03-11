@@ -13,8 +13,8 @@ import poo_tp2.controller.GameController;
 import poo_tp2.Position;
 
 /**
- *
- * @author tiff9
+ * Implements the view of the game
+ * @author Claire and Tiffany
  */
 public class GameView extends JFrame {
 
@@ -40,6 +40,13 @@ public class GameView extends JFrame {
     public boolean isScary = false;
 
 
+    /**
+     * Constructor of the window, creates the park and the pigeons
+     * @param rows
+     * @param columns
+     * @param entitiesPositions
+     * @param c 
+     */
     public GameView(int rows, int columns, ArrayList<Position> entitiesPositions, GameController c) {
         this.controller = c;
         
@@ -150,7 +157,7 @@ public class GameView extends JFrame {
 
                     synchronized (cells[x][y]) {
 
-                        //supprimer l'img du pigeon sur la case précédente
+                        //delete the pigeon picture on the previous cell
                         if (cells[pX][pY].getComponentCount() >= 3) {
                             cells[pX][pY].remove(2);
                             cells[pX][pY].revalidate();
@@ -159,18 +166,17 @@ public class GameView extends JFrame {
                     }
 
                     //supprimer fresh food 
-                    //cas 3 components: position + fresh food
+                    //3 components: position + fresh food
                     if (cells[x][y].getComponentCount() == 3) {
                         cells[x][y].remove(2);
                         cells[x][y].revalidate();
                         cells[x][y].add(labelEntity);
                         panelPark.repaint();
-                    } //cas 4 components: position + unvalid+ rotten food
+                    } //4 components: position + unvalid + rotten food
                     else if (cells[x][y].getComponentCount() >= 4) {
                         if (cells[x][y].getComponent(2) instanceof JLabel) {
                             JLabel label = (JLabel) cells[x][y].getComponent(2);
-                            //if (label.getText() != null && label.getText().equals("unvalid")) {
-                            System.out.println("On affiche du pourri");
+                            System.out.println("Displaying rotten");
                             JLabel labelUnvalidTarget = (JLabel) cells[x][y].getComponent(3);
 
                             int compCount = cells[x][y].getComponentCount();

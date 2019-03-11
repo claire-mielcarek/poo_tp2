@@ -11,8 +11,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author clair
+ * Implement the food for the pigeons
+ * @author Claire and Tiffany
  */
 public class Food implements Runnable {
 
@@ -21,6 +21,10 @@ public class Food implements Runnable {
     private int freshness;
     private final Position p;
 
+    /**
+     * Main constructor initializing the food and its freshness
+     * @param p 
+     */
     public Food(Position p) {
         this.p = p;
         freshness = FRESHNESS_MAX;
@@ -31,8 +35,7 @@ public class Food implements Runnable {
     }
 
     /**
-     * ¨Déclenche le pourrissement de la nourriture 
-     * TODO 1 (fait?): doit faire disparaitre la nourriture au bout d'un moment
+     * Starts the rotting of the food
      */
     @Override
     public void run() {
@@ -73,7 +76,7 @@ public class Food implements Runnable {
     }
 
     /**
-     * Return the freshest food in a list of Foo
+     * Return the freshest food in a list of Food
      *
      * @param list
      * @return the freshest food found or null if list is empty

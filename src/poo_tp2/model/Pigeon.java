@@ -11,8 +11,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author clair
+ * Pigeon class that implements pigeons and their behaviour 
+ * @author Claire and Tiffany
  */
 public class Pigeon implements Runnable {
 
@@ -22,8 +22,13 @@ public class Pigeon implements Runnable {
     int sleepCounter = 0;
     GameController controller;
     int number;
-    boolean thereIsAChild = false;
 
+    /**
+     * Main constructor initializing a pigeon in a park
+     * @param number
+     * @param position
+     * @param park 
+     */
     public Pigeon(int number, Position position, Park park) {
         this.position = position;
         this.park = park;
@@ -46,9 +51,7 @@ public class Pigeon implements Runnable {
     }
 
     /**
-     * The pigeon moves randomly somewhere else in the park TODO 2: gérer la
-     * concurrence avec le changement de position de goTo TODO 4: utiliser
-     * Position.generateRandomPosition()?
+     * The pigeon moves randomly somewhere else in the park
      */
     synchronized void beAfraid() {
         Cell oldCell = park.getCell(this.getPosition());
@@ -64,8 +67,6 @@ public class Pigeon implements Runnable {
         Position pos = new Position(x, y);
         c = park.getCell(pos);
         synchronized (c) {
-            //Pigeon pigeon = new Pigeon(pos, this.park);
-            //c.setPigeon(pigeon);
             this.setPosition(pos);
             oldCell.setPigeon(null);
             c.setPigeon(this);
@@ -96,7 +97,7 @@ public class Pigeon implements Runnable {
     void sleep(boolean incrementCounter) {
         if (incrementCounter) {
             sleepCounter++;
-            System.out.println("Pigeon" + number + "The pigeon do nothing");
+            System.out.println("Pigeon " + number + ": The pigeon do nothing");
         }
         try {
             Thread.sleep(1000);
@@ -110,7 +111,7 @@ public class Pigeon implements Runnable {
      */
     void act() {
         Position p;
-        System.out.println("Pigeon" + number + "\n" + park);
+        System.out.println("Pigeon " + number + "\n" + park);
         while (true) {
             while (sleepCounter < maxTimeSleeping) {
                 if (park.isScary) {
@@ -119,7 +120,7 @@ public class Pigeon implements Runnable {
                 }
                 p = findNextPosition();
                 System.out.println(park);
-                System.out.println("Pigeon" + number + "nex pos : " + p);
+                System.out.println("Pigeon " + number + " nex pos : " + p);
                 if (p != null) {
                     goTo(p);
                     sleep(false);
@@ -127,7 +128,7 @@ public class Pigeon implements Runnable {
                     sleep(true);
                 }
             }
-            System.out.println("Pigeon" + number + "Je dors");
+            System.out.println("Pigeon " + number + " Je dors");
             synchronized (park) {
                 try {
                     park.wait();
@@ -153,7 +154,4 @@ public class Pigeon implements Runnable {
         this.position = p;
     }
 
-    void aChildCome() {
-        thereIsAChild = true;
-    }
 }

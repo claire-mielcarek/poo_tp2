@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import poo_tp2.controller.GameController;
 
 /**
- *
- * @author clair
+ * Implements the park
+ * @author Claire and Tiffany
  */
 public class Park {
 
