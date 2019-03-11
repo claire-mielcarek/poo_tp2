@@ -7,20 +7,28 @@ package poo_tp2.model;
 
 import poo_tp2.Position;
 /**
- *
- * @author clair
+ * Implements the cells of the park
+ * @author Claire and Tiffany
  */
 public class Cell {
     Pigeon pigeon;
     Food food;
     Position position;
 
+    /**
+     * Main constructor initializing the cell
+     * @param p 
+     */
     Cell(Position p) {
         pigeon = null;
         food = null;
         this.position = p;
     }
 
+    /**
+     * The food is eaten by a pigeon
+     * Remove the food of the cell
+     */
     synchronized void removeFood() {
         this.food = null;
         notifyAll();
@@ -82,7 +90,7 @@ public class Cell {
     }
 
     /**
-     * The pigeon which is on the cell leaves
+     * The pigeonon the cell leaves
      */
     synchronized void pigeonIsLeaving() {
         pigeon = null;

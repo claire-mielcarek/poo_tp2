@@ -5,8 +5,6 @@
  */
 package poo_tp2.controller;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -19,8 +17,8 @@ import poo_tp2.Position;
 import poo_tp2.view.View;
 
 /**
- *
- * @author clair
+ * Controller of the game view
+ * @author Claire and Tiffany
  */
 public class GameController implements MouseListener {
 
@@ -29,12 +27,19 @@ public class GameController implements MouseListener {
     private ArrayList<Pigeon> pigeons;
     private ArrayList<Position> pigeonPositions;
 
-    public GameController(Park park, int nbPigeons, int mapSize) {
+    /**
+     * Main Constructor: initialize the park, pigeons, and positions
+     * @param park
+     * @param nbPigeons
+     * @param mapSize 
+     */
+    public GameController (Park park, int nbPigeons, int mapSize) {
         this.myPark = park;
         this.pigeons = new ArrayList<>();
         this.pigeonPositions = new ArrayList<>();
-
+        
         for (int i = 0; i < nbPigeons; i++) {
+            
             Pigeon pg = myPark.addPigeon(i);
             this.pigeons.add(pg);
             this.pigeonPositions.add(pg.getPosition());
@@ -74,7 +79,8 @@ public class GameController implements MouseListener {
     }
 
     /**
-     *
+     * Method to scare the pigeons and give them random new positions at random moments
+     * Throws a thread
      * @param myPark
      */
     public void scareEntities(Park myPark) {
@@ -111,8 +117,8 @@ public class GameController implements MouseListener {
     }
 
     /**
-     * Action to do when the user clicks
-     *
+     * Implements the actions after a mouse click
+     * Places food on the clicked cell
      * @param e
      */
     @Override
@@ -153,6 +159,7 @@ public class GameController implements MouseListener {
 
     @Override
     public void mouseEntered(MouseEvent e) {
+        v.gv.panelPark.repaint();
         //.out.println("mouseEntered");
     }
 
@@ -162,8 +169,8 @@ public class GameController implements MouseListener {
     }
 
     /**
-     * Used by the pigeons to tell that they moved Get the needed data to
-     * refresh the view and refresh it
+     * Used by the pigeons to tell that they moved
+     * Get the needed data to refresh the view and refresh it
      *
      * @param pigeonNumber
      * @param newPosition
