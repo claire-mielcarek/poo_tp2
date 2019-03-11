@@ -69,7 +69,7 @@ public class Pigeon implements Runnable {
             c.setPigeon(this);
             park.controller.notifyPigeonMoved(this.number, pos);
         }
-        System.out.println("I've got afraid");
+        System.out.println("Pigeon" +number + "I've got afraid");
 
     }
 
@@ -95,7 +95,7 @@ public class Pigeon implements Runnable {
     void sleep(boolean incrementCounter) {
         if (incrementCounter) {
             sleepCounter++;
-            System.out.println("The pigeon do nothing");
+            System.out.println("Pigeon" +number + "The pigeon do nothing");
         }
         try {
             Thread.sleep(1000);
@@ -109,7 +109,7 @@ public class Pigeon implements Runnable {
      */
     void act() {
         Position p;
-        System.out.println(park);
+        System.out.println("Pigeon" +number + "\n" + park);
         while (true) {
             while (sleepCounter < maxTimeSleeping) {
                 /*if (thereIsAChild) {
@@ -130,7 +130,7 @@ public class Pigeon implements Runnable {
                 }
                 p = findNextPosition();
                 System.out.println(park);
-                System.out.println("nex pos : " + p);
+                System.out.println("Pigeon" +number + "nex pos : " + p);
                 if (p != null) {
                     goTo(p);
                     sleep(false);
@@ -138,7 +138,7 @@ public class Pigeon implements Runnable {
                     sleep(true);
                 }
             }
-            System.out.println("Je dors");
+            System.out.println("Pigeon" +number + "Je dors");
                 /*if (park.isScary)
                 {
                     this.beAfraid();

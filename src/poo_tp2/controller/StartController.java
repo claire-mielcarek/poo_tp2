@@ -20,58 +20,41 @@ import poo_tp2.view.View;
  *
  * @author tiff9
  */
-public class StartController implements ActionListener{
+public class StartController implements ActionListener {
 
     public StartView sv;
-    
+
     /**
-     * 
+     *
      */
-    public StartController(){
+    public StartController() {
         this.sv = new StartView(this);
     }
-    
-    
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        
-        if (e.getSource() == this.sv.buttonPlay){
+
+        if (e.getSource() == this.sv.buttonPlay) {
             //creating map and generating pigeons
             int mapSize = this.sv.getMapSize();
             int entitiesNumber = this.sv.getEntitiesNumber();
             Park myPark = new Park(mapSize);
-            
+
             GameController c = new GameController(myPark, entitiesNumber, mapSize);
             this.sv.closeStartView();
-            
-            ArrayList<Pigeon> pigeons = c.getPigeons();
-            ArrayList<Position> pigeonPositions = c.getPigeonPositions();
 
             myPark.setController(c);
 
-            //TODO 3: problème de pigeon qui ne bouge pas quand il devrait
-            for (int i = 0; i < entitiesNumber; i++) {
-                //addPigeon(myPark, pigeons);
-                Pigeon pg = myPark.addPigeon(i);
-                c.getPigeons().add(pg);
-                pigeons.add(pg);
-                c.setPigeons(pigeons);
-
-
-                pigeonPositions.add(pg.getPosition());
-                c.setPigeonPositions(pigeonPositions);
-
-            }
             //creating GameView
             c.setView(new View(mapSize, mapSize, c.getPigeonPositions(), c));
             for (int i = 0; i < entitiesNumber; i++) {
                 Thread threadPigeon = new Thread(c.getPigeons().get(i));
                 threadPigeon.start();
             }
-            
+
             //start randomly scaring pigeons
             c.scareEntities(myPark);
-        }    
+        }
     }
-    
+
 }

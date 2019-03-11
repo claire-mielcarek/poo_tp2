@@ -33,77 +33,55 @@ public class GameController implements MouseListener {
         this.myPark = park;
         this.pigeons = new ArrayList<>();
         this.pigeonPositions = new ArrayList<>();
+
+        for (int i = 0; i < nbPigeons; i++) {
+            Pigeon pg = myPark.addPigeon(i);
+            this.pigeons.add(pg);
+            this.pigeonPositions.add(pg.getPosition());
+        }
     }
 
-    public View getView(){
+    public View getView() {
         return this.v;
     }
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
 
-        int nbPigeons = Integer.parseInt(args[0]);
-        int mapSize = Integer.parseInt(args[1]);
-        Park myPark = new Park(mapSize);
-
-        GameController c = new GameController(myPark, nbPigeons, mapSize);
-
-        myPark.setController(c);
-
-        for (int i = 0; i < nbPigeons; i++) {
-            //addPigeon(myPark, pigeons);
-            Pigeon pg = myPark.addPigeon(i);
-            c.pigeons.add(pg);
-            c.pigeonPositions.add(pg.getPosition());
-        }
-        //création de la vue
-        c.v = new View(mapSize, mapSize, c.pigeonPositions, c);
-        //c.v.gv.controller = c;
-        for (int i = 0; i < nbPigeons; i++) {
-            Thread threadPigeon = new Thread(c.pigeons.get(i));
-            threadPigeon.start();
-        }
-    }
-
-        //Child child = new Child(c.pigeons);
-        //(new Thread(child)).start();
-
-    public Park getPark(){
+    public Park getPark() {
         return this.myPark;
     }
-    public ArrayList<Pigeon> getPigeons(){
+
+    public ArrayList<Pigeon> getPigeons() {
         return this.pigeons;
     }
-    
-    public void setView(View v){
+
+    public void setView(View v) {
         this.v = v;
     }
 
-    public void setPark(Park park){
+    public void setPark(Park park) {
         this.myPark = park;
     }
-    public void setPigeons(ArrayList<Pigeon> pigeons){
+
+    public void setPigeons(ArrayList<Pigeon> pigeons) {
         this.pigeons = pigeons;
     }
-    
-    public ArrayList<Position> getPigeonPositions(){
+
+    public ArrayList<Position> getPigeonPositions() {
         return this.pigeonPositions;
     }
-    
-    public void setPigeonPositions(ArrayList<Position> positions){
+
+    public void setPigeonPositions(ArrayList<Position> positions) {
         this.pigeonPositions = positions;
     }
-    
+
     /**
-     * 
-     * @param myPark 
+     *
+     * @param myPark
      */
-    public void scareEntities(Park myPark){
-        Thread thread = new Thread(){
+    public void scareEntities(Park myPark) {
+        Thread thread = new Thread() {
             @Override
-            public void run(){
-                while(true){
+            public void run() {
+                while (true) {
                     int time = (int) (5000 + Math.random() * 10000);
                     try {
                         Thread.sleep(time);
@@ -131,7 +109,7 @@ public class GameController implements MouseListener {
         };
         thread.start();
     }
-    
+
     /**
      * Action to do when the user clicks
      *
@@ -182,10 +160,11 @@ public class GameController implements MouseListener {
     }
 
     /**
-     * Used by the pigeons to tell that they moved
-     * Get the needed data to refresh the view and refresh it
+     * Used by the pigeons to tell that they moved Get the needed data to
+     * refresh the view and refresh it
+     *
      * @param pigeonNumber
-     * @param newPosition 
+     * @param newPosition
      */
     public void notifyPigeonMoved(int pigeonNumber, Position newPosition) {
         pigeonPositions.set(pigeonNumber, newPosition);
@@ -201,6 +180,5 @@ public class GameController implements MouseListener {
         v.gv.refreshTargetImage(targets, targetValidity);
         v.gv.park.repaint();
     }
-
 
 }
