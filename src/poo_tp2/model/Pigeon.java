@@ -77,14 +77,16 @@ public class Pigeon implements Runnable {
     /**
      * Move to a cell and eat the food on if there is
      */
-    void goTo(Position p) {
+    void goTo(Position p) throws Exception {
         Cell c = park.getCell(p);
         synchronized (c) {
             if (park.canGo(this, p)) {
-                //System.out.println("Pigeon goes to " + p);
                 park.pigeonIsMoving(this, p);
                 this.position = p;
                 park.controller.notifyPigeonMoved(this.number, this.position);
+            }
+            else{
+                throw new Exception("There is already a pigeon here");
             }
         }
     }
@@ -121,7 +123,11 @@ public class Pigeon implements Runnable {
                 System.out.println(park);
                 System.out.println("Pigeon" + number + "nex pos : " + p);
                 if (p != null) {
-                    goTo(p);
+                    try {
+                        goTo(p);
+                    } catch (Exception ex) {
+                        Logger.getLogger(Pigeon.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     sleep(false);
                 } else {
                     sleep(true);
@@ -132,7 +138,7 @@ public class Pigeon implements Runnable {
                 try {
                     park.wait();
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(Pigeon.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Pigeon.class.getName()).log(Level.WARNING, null, ex);
                 }
             }
             sleepCounter = 0;
